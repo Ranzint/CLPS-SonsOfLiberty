@@ -12,7 +12,7 @@
    x="0px"
    y="0px"
    viewBox="0 0 1711.7 1992.1"
-   style="enable-background:new 0 0 1711.7 1992.1;"
+   style="enable-background:new 0 0 1711.7 1992.1;background-color:#050505;"
    xml:space="preserve"
    sodipodi:docname="north-america-map.svg"
    inkscape:version="1.0.1 (c497b03c, 2020-09-10)"><metadata
@@ -21,10 +21,11 @@
          rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
    id="defs1049" />
 <style type="text/css" id="site-map-style">
-  .st0 { fill: #151515; stroke: #aaa; stroke-width: 0.65; stroke-linejoin: round; stroke-miterlimit: 10; }
-  .st1, .st2, .st3 { fill: #151515; stroke: #aaa; stroke-width: 0.65; stroke-linejoin: round; stroke-miterlimit: 10; }
+  .st0 { fill: #202020; stroke: #888; stroke-width: 0.55; stroke-linejoin: round; stroke-miterlimit: 10; }
+  .st1, .st2, .st3 { fill: #202020; stroke: #888; stroke-width: 0.55; stroke-linejoin: round; stroke-miterlimit: 10; }
   .st4 { display: none; }
-  .st5 { fill: #151515; stroke: #aaa; stroke-width: 0.65; }
+  .st5 { fill: #202020; stroke: #888; stroke-width: 0.55; }
+  #Canada, #USA, #Mexico { filter: drop-shadow(0 0 1.6px rgba(255,255,255,.85)); }
 </style>
 <sodipodi:namedview
    bordercolor="#666666"

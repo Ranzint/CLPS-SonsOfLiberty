@@ -263,6 +263,16 @@ body.site-home-page {
   background: #050505;
 }
 
+.site-home__map-area {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(56vw, 66vh, 780px);
+  height: 100%;
+  min-height: 0;
+  transition: transform 520ms cubic-bezier(.2,.75,.25,1);
+}
+
 .site-home__title {
   margin: 0;
   color: #f4f4f4;
@@ -270,15 +280,24 @@ body.site-home-page {
   letter-spacing: 0.015em;
   text-align: center;
   text-shadow: none;
+  transition: transform 520ms cubic-bezier(.2,.75,.25,1);
+}
+
+.site-home.has-info .site-home__title {
+  transform: translateX(calc(-1 * min(16vw, 220px))) scale(.9);
 }
 
 .site-home__map {
   display: block;
-  width: min(56vw, 66vh, 780px);
+  width: 100%;
   height: 100%;
   min-height: 0;
-  object-fit: contain;
-  filter: drop-shadow(0 0 1px rgba(255,255,255,.9)) drop-shadow(0 0 2px rgba(255,255,255,.28));
+  border: 0;
+  overflow: visible;
+}
+
+.site-home.has-info .site-home__map-area {
+  transform: translateX(-10vw) scale(.94);
 }
 
 .site-home__credit {
@@ -294,6 +313,130 @@ body.site-home-page {
 
 body.site-home-page #mobile-nav {
   display: none !important;
+}
+
+.state-info {
+  position: fixed;
+  z-index: 30;
+  top: 0;
+  right: 0;
+  box-sizing: border-box;
+  width: min(440px, 37vw);
+  height: 100vh;
+  height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 23px 28px 30px;
+  color: #e8e8e8;
+  background: rgba(13, 13, 13, .97);
+  border-left: 1px solid #353535;
+  box-shadow: -24px 0 70px rgba(0, 0, 0, .5);
+  text-align: right;
+  transform: translateX(102%);
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 480ms cubic-bezier(.2,.75,.25,1), visibility 480ms;
+}
+
+.site-home.has-info .state-info {
+  transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.state-info__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.state-info__eyebrow,
+.state-info__kicker {
+  color: #888;
+  font: 10px/1.5 "Courier New", monospace;
+  letter-spacing: .14em;
+}
+
+.state-info__close {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: #ddd;
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 50%;
+  font: 24px/1 Arial, sans-serif;
+  cursor: pointer;
+}
+
+.state-info__close:hover,
+.state-info__close:focus-visible {
+  color: #fff;
+  border-color: #aaa;
+  outline: none;
+}
+
+.state-info__image {
+  display: block;
+  width: 112px;
+  height: 112px;
+  margin: 0 0 16px auto;
+  object-fit: contain;
+}
+
+.state-info__kicker {
+  margin: 0 0 5px;
+}
+
+.state-info__title {
+  margin: 0;
+  color: #fff;
+  font: 400 28px/1.2 "PorscheTitle", sans-serif;
+  text-shadow: none;
+}
+
+.state-info__summary {
+  margin: 10px 0 25px;
+  color: #a3a3a3;
+  font: 12px/1.6 Arial, sans-serif;
+}
+
+.state-info__section {
+  padding: 15px 0 13px;
+  border-top: 1px solid #303030;
+}
+
+.state-info__section h3 {
+  margin: 0 0 11px;
+  color: #f1f1f1;
+  font: 11px/1.4 "Courier New", monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.state-info__section dl {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+}
+
+.state-info__row dt,
+.state-info__row dd {
+  margin: 0;
+  text-align: right;
+}
+
+.state-info__row dt {
+  color: #777;
+  font: 10px/1.4 Arial, sans-serif;
+}
+
+.state-info__row dd {
+  margin-top: 2px;
+  color: #d1d1d1;
+  font: 12px/1.45 Arial, sans-serif;
 }
 
 @media (max-width: 767px) {
@@ -325,7 +468,33 @@ body.site-home-page #mobile-nav {
   }
 
   .site-home__map {
+    width: 100%;
+  }
+
+  .site-home__map-area {
     width: min(88vw, 65vh);
+  }
+
+  .site-home.has-info .site-home__map-area {
+    transform: translateX(-22vw) scale(.78);
+  }
+
+  .site-home.has-info .site-home__title {
+    opacity: 0;
+  }
+
+  .state-info {
+    width: min(88vw, 440px);
+    padding: 18px 20px 24px;
+  }
+
+  .state-info__title {
+    font-size: 23px;
+  }
+
+  .state-info__image {
+    width: 88px;
+    height: 88px;
   }
 }
 
@@ -344,11 +513,24 @@ body.site-home-page #mobile-nav {
   }
 
   .site-home__map {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+  }
+
+  .site-home__map-area {
     grid-column: 2;
     grid-row: 1 / 3;
-    width: auto;
-    max-width: 48vw;
-    height: 94%;
+    width: min(56vw, 66vh, 780px);
+    height: 100%;
+  }
+
+  .site-home.has-info .site-home__map-area {
+    transform: translateX(-5vw) scale(.9);
+  }
+
+  .state-info {
+    width: min(430px, 43vw);
   }
 
   .site-home__credit {
