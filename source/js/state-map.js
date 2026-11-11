@@ -294,16 +294,28 @@
     var iconUrl = mapObject.getAttribute('data-icon-url');
     var iconNs = 'http://www.w3.org/2000/svg';
     var initialView = svg.viewBox.baseVal;
-    // Leave breathing room around the map at the default zoom. This lets a
-    // small zoom-in happen before the outer geography reaches the SVG frame.
-    var viewPaddingX = initialView.width * 0.15;
-    var viewPaddingY = initialView.height * 0.15;
-    var viewBounds = {
-      x: initialView.x - viewPaddingX,
-      y: initialView.y - viewPaddingY,
-      width: initialView.width + viewPaddingX * 2,
-      height: initialView.height + viewPaddingY * 2
-    };
+    var sourceBounds = { x: initialView.x, y: initialView.y, width: initialView.width, height: initialView.height };
+    var viewBounds;
+    function fitBoundsToBrowser() {
+      var viewportWidth = svg.clientWidth || window.innerWidth || sourceBounds.width;
+      var viewportHeight = svg.clientHeight || window.innerHeight || sourceBounds.height;
+      var viewportRatio = viewportWidth / viewportHeight;
+      var sourceRatio = sourceBounds.width / sourceBounds.height;
+      var width = sourceBounds.width;
+      var height = sourceBounds.height;
+      if (viewportRatio > sourceRatio) {
+        width = height * viewportRatio;
+      } else {
+        height = width / viewportRatio;
+      }
+      return {
+        x: sourceBounds.x + (sourceBounds.width - width) / 2,
+        y: sourceBounds.y + (sourceBounds.height - height) / 2,
+        width: width,
+        height: height
+      };
+    }
+    viewBounds = fitBoundsToBrowser();
     svg.setAttribute('viewBox', [viewBounds.x, viewBounds.y, viewBounds.width, viewBounds.height].join(' '));
     var zoomLevel = 1;
     var maxZoom = 8;
@@ -318,9 +330,9 @@
     interactionStyle.textContent = [
       '#USA [id^="US-"] { cursor: pointer; pointer-events: all; }',
       '#USA [id^="US-"]:focus { outline: none; }',
-      '#USA [id^="US-"].is-selected path { animation: state-flash 1.15s ease-in-out infinite; }',
+      '#USA [id^="US-"].is-selected, #USA [id^="US-"].is-selected * { animation: state-flash 1.15s ease-in-out infinite; }',
       '@keyframes state-flash { 0%,100% { fill: #fff; fill-opacity: .25; } 50% { fill: #fff; fill-opacity: .82; } }',
-      '@media (prefers-reduced-motion: reduce) { #USA [id^="US-"].is-selected path { animation: none; fill: #fff !important; fill-opacity: .55; } }',
+      '@media (prefers-reduced-motion: reduce) { #USA [id^="US-"].is-selected, #USA [id^="US-"].is-selected * { animation: none; fill: #fff !important; fill-opacity: .55; } }',
       '#state-markers { pointer-events: none; }',
       '.state-map-panning { cursor: grabbing !important; }',
       'svg { touch-action: none; user-select: none; }'
@@ -463,6 +475,19 @@
         if (action === 'in') zoomAt(zoomLevel * 1.25);
         if (action === 'out') zoomAt(zoomLevel / 1.25);
         if (action === 'reset') applyView(viewBounds);
+      });
+    });
+
+    window.addEventListener('resize', function () {
+      var before = currentView();
+      var centerX = before.x + before.width / 2;
+      var centerY = before.y + before.height / 2;
+      viewBounds = fitBoundsToBrowser();
+      applyView({
+        x: centerX - viewBounds.width / zoomLevel / 2,
+        y: centerY - viewBounds.height / zoomLevel / 2,
+        width: viewBounds.width / zoomLevel,
+        height: viewBounds.height / zoomLevel
       });
     });
 
