@@ -284,7 +284,8 @@ body.site-home-page {
   height: auto;
   opacity: var(--moon-opacity, 0);
   pointer-events: none;
-  filter: blur(var(--moon-blur, 24px)) drop-shadow(0 0 28px rgba(255, 255, 255, .92));
+  filter: invert(1) blur(var(--moon-blur, 24px)) drop-shadow(0 0 28px rgba(255, 255, 255, .92));
+  mix-blend-mode: screen;
   transform: translate(calc(-50% + var(--moon-pan-x)), calc(-50% + var(--moon-pan-y))) scale(var(--moon-scale, 1.08));
   transform-origin: center;
   transition: opacity 900ms ease, filter 900ms ease, transform 900ms ease;

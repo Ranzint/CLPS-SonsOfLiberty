@@ -381,6 +381,15 @@
     var activePointers = new Map();
     var pinchStart = null;
     var zoomReadout = document.getElementById('map-zoom-value');
+    var moon = document.getElementById('site-home-moon');
+
+    function updateMoon() {
+      if (!moon) return;
+      var reveal = Math.max(0, Math.min(1, (1.2 - zoomLevel) / 0.2));
+      moon.style.setProperty('--moon-opacity', (reveal * 0.4).toFixed(3));
+      moon.style.setProperty('--moon-blur', (24 - reveal * 14).toFixed(1) + 'px');
+      moon.style.setProperty('--moon-scale', (1.12 + reveal * 0.12).toFixed(3));
+    }
 
     var interactionStyle = mapDoc.createElementNS(iconNs, 'style');
     interactionStyle.textContent = [
@@ -413,6 +422,7 @@
       svg.setAttribute('viewBox', [box.x, box.y, box.width, box.height].join(' '));
       zoomLevel = viewBounds.width / box.width;
       if (zoomReadout) zoomReadout.textContent = zoomLevel.toFixed(1).replace(/\.0$/, '') + '×';
+      updateMoon();
     }
 
     function pointAt(clientX, clientY) {
@@ -497,6 +507,10 @@
         }
         if (dragMoved) {
           panByPixels(dx, dy, dragStart.view);
+          if (moon) {
+            moon.style.setProperty('--moon-pan-x', Math.max(-32, Math.min(32, -dx * 0.08)).toFixed(1) + 'px');
+            moon.style.setProperty('--moon-pan-y', Math.max(-32, Math.min(32, -dy * 0.08)).toFixed(1) + 'px');
+          }
           event.preventDefault();
         }
       }
@@ -513,6 +527,10 @@
       }
       if (activePointers.size < 2) pinchStart = null;
       if (!activePointers.size) svg.classList.remove('state-map-panning');
+      if (!activePointers.size && moon) {
+        moon.style.setProperty('--moon-pan-x', '0px');
+        moon.style.setProperty('--moon-pan-y', '0px');
+      }
     }
 
     mapDoc.addEventListener('pointerup', endPointer);
