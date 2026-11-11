@@ -620,6 +620,434 @@ body.site-home-page #mobile-nav {
   text-decoration: underline;
 }
 
+/* --- Article effects kit ---------------------------------------------
+   Article HTML is sanitized (no script / style / inline style), so the
+   visual effects used by test documents live here and are opted into
+   through class names only. Prefix: art-
+   ------------------------------------------------------------------- */
+
+.state-articles__html .art-note {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  color: var(--text-muted);
+  background: #121212;
+  border-left: 2px solid #5a5a5a;
+  font-size: 12px;
+}
+
+.state-articles__html .art-figure {
+  margin: 16px 0 22px;
+  padding: 16px;
+  background: #131313;
+  border: 1px solid var(--line-gray);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.state-articles__html .art-figure--tight {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 18px 22px;
+}
+
+.state-articles__html .art-figure svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.state-articles__html .art-figure text {
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  letter-spacing: .1em;
+}
+
+.state-articles__html .art-caption {
+  margin: 12px 0 0;
+  color: var(--text-muted);
+  font: 10px/1.6 "Courier New", monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.state-articles__html .art-mono {
+  color: var(--text-muted);
+  font: 10px/1.6 "Courier New", monospace;
+  letter-spacing: .12em;
+}
+
+.state-articles__html .art-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 10px;
+  margin: 16px 0 22px;
+}
+
+.state-articles__html .art-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 8px 10px;
+  background: #121212;
+  border: 1px solid #2c2c2c;
+  border-radius: 10px;
+  transition: transform .25s ease, border-color .25s ease, background .25s ease;
+}
+
+.state-articles__html .art-tile:hover {
+  transform: translateY(-4px) scale(1.04);
+  background: #1b1b1b;
+  border-color: #6a6a6a;
+}
+
+.state-articles__html .art-tile svg {
+  width: 42px;
+  height: 42px;
+}
+
+.state-articles__html .art-tile span {
+  color: var(--text-muted);
+  font: 10px/1.4 "Courier New", monospace;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.state-articles__html .art-hover {
+  position: relative;
+  height: 180px;
+  margin: 16px 0 22px;
+  background: radial-gradient(circle at 50% 45%, #1a1a1a, #0c0c0c 70%);
+  border: 1px dashed #3c3c3c;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.state-articles__html .art-hover__layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px;
+  text-align: center;
+  transition: opacity .4s ease, transform .4s ease;
+}
+
+.state-articles__html .art-hover__front {
+  color: #dcdcdc;
+  font: 11px/1.6 "Courier New", monospace;
+  letter-spacing: .12em;
+}
+
+.state-articles__html .art-hover__back {
+  opacity: 0;
+  transform: scale(.9);
+  color: #fff;
+  font: 11px/1.8 "Courier New", monospace;
+  letter-spacing: .1em;
+}
+
+.state-articles__html .art-hover__back strong {
+  font-size: 16px;
+  letter-spacing: .16em;
+}
+
+.state-articles__html .art-hover:hover .art-hover__front {
+  opacity: 0;
+  transform: scale(.62) rotate(-6deg);
+  visibility: hidden;
+}
+
+.state-articles__html .art-hover:hover .art-hover__back {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.state-articles__html .art-spin-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin: 16px 0 22px;
+}
+
+.state-articles__html .art-spin {
+  width: 84px;
+  height: 84px;
+  margin: 10px auto 0;
+  border: 2px dashed #6d6d6d;
+  border-top-color: #f0f0f0;
+  border-radius: 50%;
+  animation: art-spin 5s linear infinite;
+}
+
+@keyframes art-spin {
+  to { transform: rotate(1turn); }
+}
+
+.state-articles__html .art-flip {
+  height: 160px;
+  margin: 16px 0 22px;
+  perspective: 800px;
+}
+
+.state-articles__html .art-flip__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .8s cubic-bezier(.2, .7, .2, 1);
+}
+
+.state-articles__html .art-flip:hover .art-flip__inner {
+  transform: rotateY(180deg);
+}
+
+.state-articles__html .art-flip__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #141414;
+  border: 1px solid #3a3a3a;
+  border-radius: 12px;
+  backface-visibility: hidden;
+  letter-spacing: .16em;
+}
+
+.state-articles__html .art-flip__face strong {
+  color: #f2f2f2;
+  font: 700 18px/1.4 "Courier New", monospace;
+}
+
+.state-articles__html .art-flip__back {
+  transform: rotateY(180deg);
+  background: #1d1d1d;
+}
+
+.state-articles__html .art-window {
+  margin: 16px 0;
+  background: #151515;
+  border: 1px solid #3c3c3c;
+  border-radius: 10px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, .45);
+  overflow: hidden;
+}
+
+.state-articles__html .art-window__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  color: #cfcfcf;
+  background: #232323;
+  border-bottom: 1px solid #3a3a3a;
+  font: 10px/1.4 "Courier New", monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.state-articles__html .art-window__bar::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  margin-right: 24px;
+  border-radius: 50%;
+  background: #8a8a8a;
+  box-shadow: 12px 0 0 #666, 24px 0 0 #444;
+}
+
+.state-articles__html .art-window__body {
+  padding: 14px 16px;
+  color: #c8c8c8;
+}
+
+.state-articles__html .art-window--nested {
+  margin: 12px 0 0;
+  background: #171717;
+  box-shadow: none;
+}
+
+.state-articles__html .art-window--nested .art-window__bar {
+  background: #2a2a2a;
+}
+
+.state-articles__html .art-window--deep {
+  background: #1d1d1d;
+  border-color: #565656;
+}
+
+.state-articles__html .art-stack {
+  margin: 16px 0 22px;
+  padding-bottom: 4px;
+}
+
+.state-articles__html .art-stack .art-window {
+  margin: 0 0 -6px;
+}
+
+.state-articles__html .art-stack .art-window:nth-child(2) {
+  margin-left: 20px;
+}
+
+.state-articles__html .art-stack .art-window:nth-child(3) {
+  margin-left: 40px;
+}
+
+.state-articles__html .art-gradient {
+  margin: 18px 0 22px;
+  color: transparent;
+  background: linear-gradient(90deg, #f4f4f4, #6f6f6f, #ffffff, #6f6f6f, #f4f4f4);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  font: 700 22px/1.4 "Courier New", monospace;
+  letter-spacing: .08em;
+  animation: art-shine 6s linear infinite;
+}
+
+@keyframes art-shine {
+  to { background-position: 300% 0; }
+}
+
+.state-articles__html .art-bars {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 22px;
+}
+
+.state-articles__html .art-bars__row {
+  display: grid;
+  grid-template-columns: 68px 1fr 42px;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font: 10px/1.4 "Courier New", monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.state-articles__html .art-bars__track {
+  height: 8px;
+  background: #262626;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.state-articles__html .art-bars__fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #565656, #eaeaea);
+  border-radius: inherit;
+  transform-origin: left center;
+  animation: art-fill 2.6s ease-in-out infinite;
+}
+
+.state-articles__html .art-bars__fill--p34 { width: 34%; }
+.state-articles__html .art-bars__fill--p62 { width: 62%; }
+.state-articles__html .art-bars__fill--p88 { width: 88%; }
+
+@keyframes art-fill {
+  0% { transform: scaleX(0); }
+  60%, 100% { transform: scaleX(1); }
+}
+
+.state-articles__html .art-details {
+  margin: 12px 0;
+  padding: 10px 14px;
+  background: #121212;
+  border: 1px solid #333;
+  border-radius: 10px;
+}
+
+.state-articles__html .art-details summary {
+  color: #e8e8e8;
+  cursor: pointer;
+  font: 12px/1.6 "Courier New", monospace;
+  letter-spacing: .08em;
+}
+
+.state-articles__html .art-details[open] {
+  border-color: #5a5a5a;
+}
+
+.state-articles__html .art-details p {
+  margin: 10px 0 2px;
+  color: #c4c4c4;
+}
+
+.state-articles__html .art-glow {
+  margin: 16px 0 22px;
+  padding: 18px;
+  background: #141414;
+  border: 1px solid #3a3a3a;
+  border-radius: 12px;
+  animation: art-glow 3.6s ease-in-out infinite;
+}
+
+@keyframes art-glow {
+  0%, 100% { box-shadow: 0 0 0 rgba(255, 255, 255, 0); }
+  50% { box-shadow: 0 0 26px rgba(255, 255, 255, .22); }
+}
+
+.state-articles__html pre {
+  margin: 16px 0 22px;
+  padding: 14px 16px;
+  background: #0f0f0f;
+  border: 1px solid #333;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+.state-articles__html pre code {
+  color: #d8d8d8;
+  font: 12px/1.8 "Courier New", monospace;
+}
+
+.state-articles__html table {
+  width: 100%;
+  margin: 16px 0 22px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.state-articles__html th,
+.state-articles__html td {
+  padding: 8px 10px;
+  border: 1px solid #3a3a3a;
+  text-align: left;
+}
+
+.state-articles__html th {
+  color: #f0f0f0;
+  background: #1c1c1c;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .state-articles__html .art-spin,
+  .state-articles__html .art-gradient,
+  .state-articles__html .art-bars__fill,
+  .state-articles__html .art-glow {
+    animation: none;
+  }
+
+  .state-articles__html .art-flip__inner,
+  .state-articles__html .art-tile,
+  .state-articles__html .art-hover__layer {
+    transition: none;
+  }
+}
+
 .state-articles__empty {
   color: #777;
   font-size: 12px;
