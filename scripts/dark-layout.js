@@ -107,6 +107,7 @@
       <button class="state-articles__close" id="state-articles-close" type="button" aria-label="关闭文章栏">×</button>
     </header>
     <div class="state-articles__body">
+      <nav class="state-articles__districts" id="state-district-list" aria-label="选择区号"></nav>
       <nav class="state-articles__list" id="state-articles-list" aria-label="文章列表"></nav>
       <article class="state-articles__content" id="state-articles-content"><p class="state-articles__empty">选择一篇文章阅读。</p></article>
     </div>

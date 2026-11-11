@@ -322,6 +322,7 @@
     var articlePanel = document.getElementById('state-articles');
     var articleToggle = document.getElementById('state-articles-toggle');
     var articleClose = document.getElementById('state-articles-close');
+    var districtList = document.getElementById('state-district-list');
     var articleList = document.getElementById('state-articles-list');
     var articleContent = document.getElementById('state-articles-content');
     if (!mapObject || !home || !panel || !closeButton) return;
@@ -598,30 +599,60 @@
 
       var sections = document.getElementById('state-info-sections');
       sections.replaceChildren.apply(sections, buildSections(state.data, profile));
-      if (articlePanel && articleList && articleContent) {
-        document.getElementById('state-articles-code').textContent = 'DISTRICT / D' + state.data.order;
-        document.getElementById('state-articles-title').textContent = title + ' · ' + districtName;
-        articleList.replaceChildren();
-        articleContent.replaceChildren();
-        var articles = districtArticles[String(state.data.order)] || [];
-        if (!articles.length) {
-          var empty = document.createElement('p');
-          empty.className = 'state-articles__empty';
-          empty.textContent = '该区暂时没有文章。';
-          articleList.appendChild(empty);
-        } else {
-          articles.forEach(function (article, index) {
-            var item = document.createElement('button');
-            item.type = 'button';
-            item.className = 'state-articles__item';
-            item.textContent = article.title || article.filename;
-            item.addEventListener('click', function () { showArticle(article, item); });
-            articleList.appendChild(item);
-            if (index === 0) showArticle(article, item);
-          });
+      if (articlePanel && articleList && articleContent) selectDistrict(state.data.order);
+      closeButton.focus({ preventScroll: true });
+    }
+
+    function selectDistrict(number) {
+      if (!articlePanel || !articleList || !articleContent) return;
+      var district = Math.max(1, Math.min(50, Number(number) || 1));
+      document.getElementById('state-articles-code').textContent = 'DISTRICT / D' + district;
+      document.getElementById('state-articles-title').textContent = 'D' + district + ' · 第' + chineseNumber(district) + '区公司';
+      if (districtList) {
+        districtList.querySelectorAll('.is-current').forEach(function (node) {
+          node.classList.remove('is-current');
+          node.setAttribute('aria-pressed', 'false');
+        });
+        var districtButton = districtList.querySelector('[data-district="' + district + '"]');
+        if (districtButton) {
+          districtButton.classList.add('is-current');
+          districtButton.setAttribute('aria-pressed', 'true');
         }
       }
-      closeButton.focus({ preventScroll: true });
+      articleList.replaceChildren();
+      articleContent.replaceChildren();
+      var articles = districtArticles[String(district)] || [];
+      if (!articles.length) {
+        var empty = document.createElement('p');
+        empty.className = 'state-articles__empty';
+        empty.textContent = '该区暂时没有文章。';
+        articleList.appendChild(empty);
+      } else {
+        articles.forEach(function (article, index) {
+          var item = document.createElement('button');
+          item.type = 'button';
+          item.className = 'state-articles__item';
+          item.textContent = article.title || article.filename;
+          item.addEventListener('click', function () { showArticle(article, item); });
+          articleList.appendChild(item);
+          if (index === 0) showArticle(article, item);
+        });
+      }
+    }
+
+    if (districtList) {
+      for (var districtNumber = 1; districtNumber <= 50; districtNumber++) {
+        (function (number) {
+          var button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'state-articles__district';
+          button.textContent = 'D' + number;
+          button.setAttribute('data-district', String(number));
+          button.setAttribute('aria-pressed', 'false');
+          button.addEventListener('click', function () { selectDistrict(number); });
+          districtList.appendChild(button);
+        })(districtNumber);
+      }
     }
 
     function showArticle(article, selectedButton) {
