@@ -145,6 +145,138 @@
     ];
   }
 
+  function initMusic() {
+    var audio = document.getElementById('site-music');
+    var button = document.getElementById('site-audio-toggle');
+    var status = document.getElementById('site-audio-status');
+    if (!audio || !button || !status) return;
+
+    var tracks;
+    try {
+      tracks = JSON.parse(audio.getAttribute('data-playlist') || '[]');
+    } catch (error) {
+      tracks = [];
+    }
+    if (!Array.isArray(tracks) || !tracks.length) {
+      button.disabled = true;
+      setStatus('NO MP3 FILES · ADD SONGS TO SOURCE/MUSIC');
+      return;
+    }
+    var currentIndex = -1;
+    var userPaused = false;
+    var fadeFrame = 0;
+    var fadeOutStarted = false;
+    var targetVolume = 0.52;
+
+    function setStatus(message) {
+      status.textContent = message;
+    }
+
+    function fadeTo(target, duration, onComplete) {
+      cancelAnimationFrame(fadeFrame);
+      var startVolume = audio.volume;
+      var startedAt = performance.now();
+      function frame(now) {
+        var progress = Math.min(1, (now - startedAt) / duration);
+        audio.volume = startVolume + (target - startVolume) * progress;
+        if (progress < 1) {
+          fadeFrame = requestAnimationFrame(frame);
+        } else if (onComplete) {
+          onComplete();
+        }
+      }
+      fadeFrame = requestAnimationFrame(frame);
+    }
+
+    function randomTrackIndex() {
+      if (tracks.length < 2 || currentIndex < 0) return Math.floor(Math.random() * tracks.length);
+      var next = currentIndex;
+      while (next === currentIndex) next = Math.floor(Math.random() * tracks.length);
+      return next;
+    }
+
+    function handleStarted() {
+      fadeOutStarted = false;
+      button.textContent = 'Ⅱ';
+      button.setAttribute('aria-label', '暂停背景音乐');
+      setStatus('NOW PLAYING · ' + tracks[currentIndex].title);
+      fadeTo(targetVolume, 1800);
+    }
+
+    function tryPlay() {
+      if (userPaused || !audio.paused) return;
+      if (currentIndex < 0) {
+        currentIndex = randomTrackIndex();
+        audio.src = tracks[currentIndex].src;
+        audio.load();
+      }
+
+      audio.volume = 0;
+      var playResult;
+      try {
+        playResult = audio.play();
+      } catch (error) {
+        setStatus('AUTOPLAY BLOCKED · CLICK TO PLAY');
+        return;
+      }
+      if (playResult && typeof playResult.then === 'function') {
+        playResult.then(handleStarted).catch(function () {
+          button.textContent = '▶';
+          button.setAttribute('aria-label', '播放背景音乐');
+          setStatus('AUTOPLAY BLOCKED · CLICK TO PLAY');
+        });
+      } else {
+        handleStarted();
+      }
+    }
+
+    function playNext() {
+      currentIndex = randomTrackIndex();
+      audio.pause();
+      audio.volume = 0;
+      audio.src = tracks[currentIndex].src;
+      audio.load();
+      tryPlay();
+    }
+
+    button.addEventListener('click', function () {
+      if (audio.paused) {
+        userPaused = false;
+        tryPlay();
+      } else {
+        userPaused = true;
+        button.textContent = '▶';
+        button.setAttribute('aria-label', '播放背景音乐');
+        setStatus('PAUSED');
+        fadeTo(0, 350, function () { audio.pause(); });
+      }
+    });
+
+    audio.addEventListener('timeupdate', function () {
+      var remaining = audio.duration - audio.currentTime;
+      if (!userPaused && !fadeOutStarted && Number.isFinite(remaining) && remaining <= 2.4 && remaining > 0) {
+        fadeOutStarted = true;
+        fadeTo(0, Math.max(250, remaining * 1000));
+      }
+    });
+    audio.addEventListener('ended', playNext);
+    audio.addEventListener('error', function () {
+      setStatus('TRACK UNAVAILABLE · CLICK TO RETRY');
+      button.textContent = '▶';
+    });
+
+    document.addEventListener('pointerdown', function (event) {
+      if (event.target.closest && event.target.closest('#site-audio-toggle')) return;
+      tryPlay();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.target.closest && event.target.closest('#site-audio-toggle')) return;
+      tryPlay();
+    });
+    window.__siteMusicStart = tryPlay;
+    tryPlay();
+  }
+
   function init() {
     if (init.initialized) return;
     var mapObject = document.getElementById('state-map');
@@ -161,6 +293,16 @@
     var selected = null;
     var iconUrl = mapObject.getAttribute('data-icon-url');
     var iconNs = 'http://www.w3.org/2000/svg';
+    var initialView = svg.viewBox.baseVal;
+    var viewBounds = { x: initialView.x, y: initialView.y, width: initialView.width, height: initialView.height };
+    var zoomLevel = 1;
+    var maxZoom = 8;
+    var dragStart = null;
+    var dragMoved = false;
+    var suppressMapClick = false;
+    var activePointers = new Map();
+    var pinchStart = null;
+    var zoomReadout = document.getElementById('map-zoom-value');
 
     var interactionStyle = mapDoc.createElementNS(iconNs, 'style');
     interactionStyle.textContent = [
@@ -169,25 +311,169 @@
       '#USA [id^="US-"].is-selected path { animation: state-flash 1.15s ease-in-out infinite; }',
       '@keyframes state-flash { 0%,100% { fill: #fff; fill-opacity: .25; } 50% { fill: #fff; fill-opacity: .82; } }',
       '@media (prefers-reduced-motion: reduce) { #USA [id^="US-"].is-selected path { animation: none; fill: #fff !important; fill-opacity: .55; } }',
-      '.state-marker { cursor: pointer; }',
-      '.state-marker:focus image { filter: drop-shadow(0 0 5px #fff); }'
+      '#state-markers { pointer-events: all; }',
+      '.state-marker-hit { pointer-events: all; cursor: default; }',
+      '.state-map-panning { cursor: grabbing !important; }',
+      'svg { touch-action: none; user-select: none; }'
     ].join('\n');
     svg.insertBefore(interactionStyle, svg.firstChild);
 
+    function currentView() {
+      var box = svg.viewBox.baseVal;
+      return { x: box.x, y: box.y, width: box.width, height: box.height };
+    }
+
+    function clampBox(box) {
+      box.width = Math.min(viewBounds.width, Math.max(viewBounds.width / maxZoom, box.width));
+      box.height = viewBounds.height * box.width / viewBounds.width;
+      box.x = Math.max(viewBounds.x, Math.min(viewBounds.x + viewBounds.width - box.width, box.x));
+      box.y = Math.max(viewBounds.y, Math.min(viewBounds.y + viewBounds.height - box.height, box.y));
+      return box;
+    }
+
+    function applyView(box) {
+      box = clampBox(box);
+      svg.setAttribute('viewBox', [box.x, box.y, box.width, box.height].join(' '));
+      zoomLevel = viewBounds.width / box.width;
+      if (zoomReadout) zoomReadout.textContent = zoomLevel.toFixed(1).replace(/\.0$/, '') + '×';
+    }
+
+    function pointAt(clientX, clientY) {
+      var point = svg.createSVGPoint();
+      point.x = clientX;
+      point.y = clientY;
+      return point.matrixTransform(svg.getScreenCTM().inverse());
+    }
+
+    function zoomAt(targetZoom, clientX, clientY) {
+      targetZoom = Math.max(1, Math.min(maxZoom, targetZoom));
+      var oldView = currentView();
+      var anchor;
+      if (typeof clientX === 'number' && typeof clientY === 'number') {
+        anchor = pointAt(clientX, clientY);
+      } else {
+        anchor = { x: oldView.x + oldView.width / 2, y: oldView.y + oldView.height / 2 };
+      }
+      var ratioX = (anchor.x - oldView.x) / oldView.width;
+      var ratioY = (anchor.y - oldView.y) / oldView.height;
+      var nextWidth = viewBounds.width / targetZoom;
+      var nextHeight = viewBounds.height / targetZoom;
+      applyView({
+        x: anchor.x - ratioX * nextWidth,
+        y: anchor.y - ratioY * nextHeight,
+        width: nextWidth,
+        height: nextHeight
+      });
+    }
+
+    function panByPixels(dx, dy, startView) {
+      var widthPx = svg.clientWidth || 1;
+      var heightPx = svg.clientHeight || 1;
+      applyView({
+        x: startView.x - dx * startView.width / widthPx,
+        y: startView.y - dy * startView.height / heightPx,
+        width: startView.width,
+        height: startView.height
+      });
+    }
+
+    svg.addEventListener('wheel', function (event) {
+      event.preventDefault();
+      zoomAt(zoomLevel * Math.exp(-event.deltaY * 0.0015), event.clientX, event.clientY);
+    }, { passive: false });
+
+    svg.addEventListener('pointerdown', function (event) {
+      activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (activePointers.size >= 2) {
+        var points = Array.from(activePointers.values());
+        var centerX = (points[0].x + points[1].x) / 2;
+        var centerY = (points[0].y + points[1].y) / 2;
+        pinchStart = {
+          distance: Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y),
+          zoom: zoomLevel,
+          x: centerX,
+          y: centerY
+        };
+        dragStart = null;
+      } else if (event.button === 0) {
+        dragStart = { id: event.pointerId, x: event.clientX, y: event.clientY, view: currentView() };
+        dragMoved = false;
+      }
+    });
+
+    mapDoc.addEventListener('pointermove', function (event) {
+      if (activePointers.has(event.pointerId)) activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (activePointers.size >= 2 && pinchStart) {
+        var points = Array.from(activePointers.values());
+        var distance = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+        var centerX = (points[0].x + points[1].x) / 2;
+        var centerY = (points[0].y + points[1].y) / 2;
+        zoomAt(pinchStart.zoom * distance / Math.max(1, pinchStart.distance), centerX, centerY);
+        event.preventDefault();
+      } else if (dragStart && dragStart.id === event.pointerId) {
+        var dx = event.clientX - dragStart.x;
+        var dy = event.clientY - dragStart.y;
+        if (!dragMoved && Math.hypot(dx, dy) > 5) {
+          dragMoved = true;
+          svg.classList.add('state-map-panning');
+          try { svg.setPointerCapture(event.pointerId); } catch (error) { /* capture is optional */ }
+        }
+        if (dragMoved) {
+          panByPixels(dx, dy, dragStart.view);
+          event.preventDefault();
+        }
+      }
+    }, { passive: false });
+
+    function endPointer(event) {
+      activePointers.delete(event.pointerId);
+      if (dragStart && dragStart.id === event.pointerId) {
+        if (dragMoved) {
+          suppressMapClick = true;
+          window.setTimeout(function () { suppressMapClick = false; }, 0);
+        }
+        dragStart = null;
+      }
+      if (activePointers.size < 2) pinchStart = null;
+      if (!activePointers.size) svg.classList.remove('state-map-panning');
+    }
+
+    mapDoc.addEventListener('pointerup', endPointer);
+    mapDoc.addEventListener('pointercancel', endPointer);
+    svg.addEventListener('click', function (event) {
+      if (suppressMapClick) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        suppressMapClick = false;
+      }
+    }, true);
+
+    document.querySelectorAll('.map-zoom [data-map-zoom]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var action = button.getAttribute('data-map-zoom');
+        if (action === 'in') zoomAt(zoomLevel * 1.25);
+        if (action === 'out') zoomAt(zoomLevel / 1.25);
+        if (action === 'reset') applyView(viewBounds);
+      });
+    });
+
+    function startMusicFromMap() {
+      if (window.__siteMusicStart) window.__siteMusicStart();
+    }
+    mapDoc.addEventListener('pointerdown', startMusicFromMap);
+    mapDoc.addEventListener('keydown', startMusicFromMap);
+
     var markers = mapDoc.createElementNS(iconNs, 'g');
     markers.setAttribute('id', 'state-markers');
-    markers.setAttribute('aria-label', '美国州图标');
+    markers.setAttribute('aria-hidden', 'true');
+    markers.setAttribute('pointer-events', 'all');
     svg.appendChild(markers);
 
     function setState(state) {
       if (!state) return;
-      if (selected) {
-        selected.node.classList.remove('is-selected');
-        selected.marker.setAttribute('aria-pressed', 'false');
-      }
+      if (selected) selected.node.classList.remove('is-selected');
 
       state.node.classList.add('is-selected');
-      state.marker.setAttribute('aria-pressed', 'true');
       selected = state;
       home.classList.add('has-info');
       panel.setAttribute('aria-hidden', 'false');
@@ -203,7 +489,6 @@
     function closePanel() {
       if (selected) {
         selected.node.classList.remove('is-selected');
-        selected.marker.setAttribute('aria-pressed', 'false');
       }
       selected = null;
       home.classList.remove('has-info');
@@ -218,14 +503,12 @@
       node.setAttribute('aria-label', data.name + ' (US-' + data.code + ')');
 
       var box;
-      var transform;
       try {
         box = node.getBBox();
-        transform = node.getCTM();
       } catch (error) {
         return;
       }
-      if (!box || !transform || !box.width || !box.height) return;
+      if (!box || !node.getCTM() || !box.width || !box.height) return;
 
       var rootToScreen = svg.getScreenCTM();
       var localToRoot = rootToScreen.inverse().multiply(node.getScreenCTM());
@@ -237,16 +520,14 @@
       var marker = mapDoc.createElementNS(iconNs, 'g');
       marker.setAttribute('class', 'state-marker');
       marker.setAttribute('data-state', data.code);
-      marker.setAttribute('role', 'button');
-      marker.setAttribute('tabindex', '0');
-      marker.setAttribute('aria-label', '查看 ' + data.name + ' 资料');
-      marker.setAttribute('aria-pressed', 'false');
 
       var hitArea = mapDoc.createElementNS(iconNs, 'circle');
+      hitArea.setAttribute('class', 'state-marker-hit');
       hitArea.setAttribute('cx', center.x);
       hitArea.setAttribute('cy', center.y);
       hitArea.setAttribute('r', size * 0.72);
       hitArea.setAttribute('fill', 'transparent');
+      hitArea.setAttribute('pointer-events', 'all');
       var image = mapDoc.createElementNS(iconNs, 'image');
       image.setAttribute('x', center.x - size / 2);
       image.setAttribute('y', center.y - size / 2);
@@ -258,17 +539,7 @@
       marker.append(hitArea, image);
       markers.appendChild(marker);
 
-      var entry = { data: data, node: node, marker: marker };
-      marker.addEventListener('click', function (event) {
-        event.stopPropagation();
-        setState(entry);
-      });
-      marker.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          setState(entry);
-        }
-      });
+      var entry = { data: data, node: node };
       node.addEventListener('click', function () { setState(entry); });
       node.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -285,6 +556,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
+    initMusic();
     var mapObject = document.getElementById('state-map');
     if (!mapObject) return;
     mapObject.addEventListener('load', init, { once: true });
