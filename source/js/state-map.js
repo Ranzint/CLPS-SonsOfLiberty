@@ -345,8 +345,6 @@
     var svg = mapDoc && mapDoc.documentElement;
     if (!svg || svg.localName !== 'svg') return;
     init.initialized = true;
-    // Let the decorative moon behind the map show through the SVG canvas.
-    svg.style.backgroundColor = 'transparent';
 
     var selected = null;
     var iconUrl = mapObject.getAttribute('data-icon-url');
