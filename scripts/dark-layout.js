@@ -108,8 +108,16 @@
     </header>
     <div class="state-articles__body">
       <nav class="state-articles__districts" id="state-district-list" aria-label="选择区号"></nav>
-      <nav class="state-articles__list" id="state-articles-list" aria-label="文章列表"></nav>
-      <article class="state-articles__content" id="state-articles-content"><p class="state-articles__empty">选择一篇文章阅读。</p></article>
+      <section class="state-articles__list" id="state-articles-list" aria-label="文章列表"></section>
+    </div>
+  </aside>
+  <aside class="state-article-reader" id="state-article-reader" aria-hidden="true" aria-label="文章阅读界面">
+    <div class="state-article-reader__page">
+      <header class="state-article-reader__header">
+        <p class="state-articles__eyebrow" id="state-article-reader-district">DISTRICT / --</p>
+        <button class="state-articles__close" id="state-article-reader-close" type="button" aria-label="返回文章列表">×</button>
+      </header>
+      <article class="state-article-reader__content" id="state-articles-content"></article>
     </div>
   </aside>
 </main>`;

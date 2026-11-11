@@ -325,6 +325,9 @@
     var districtList = document.getElementById('state-district-list');
     var articleList = document.getElementById('state-articles-list');
     var articleContent = document.getElementById('state-articles-content');
+    var articleReader = document.getElementById('state-article-reader');
+    var articleReaderClose = document.getElementById('state-article-reader-close');
+    var articleReaderDistrict = document.getElementById('state-article-reader-district');
     if (!mapObject || !home || !panel || !closeButton) return;
 
     var stateProfiles = {};
@@ -628,14 +631,27 @@
         empty.textContent = '该区暂时没有文章。';
         articleList.appendChild(empty);
       } else {
+        var districtState = states.filter(function (state) { return state.order === district; })[0];
+        var districtProfile = districtState ? stateProfiles[districtState.code] || {} : {};
+        var thumbnail = districtProfile.imageUrl || (districtState && (stateProfiles[districtState.code] || {}).iconUrl) || mapObject.getAttribute('data-icon-url');
         articles.forEach(function (article, index) {
+          var card = document.createElement('article');
+          card.className = 'state-articles__card';
+          var image = document.createElement('img');
+          image.className = 'state-articles__card-image';
+          image.src = thumbnail;
+          image.alt = '';
+          image.loading = 'lazy';
+          var title = document.createElement('h3');
+          title.className = 'state-articles__card-title';
+          title.textContent = article.title || article.filename;
           var item = document.createElement('button');
           item.type = 'button';
           item.className = 'state-articles__item';
-          item.textContent = article.title || article.filename;
-          item.addEventListener('click', function () { showArticle(article, item); });
-          articleList.appendChild(item);
-          if (index === 0) showArticle(article, item);
+          item.textContent = '进入文章';
+          item.addEventListener('click', function () { showArticle(article, district); });
+          card.append(image, title, item);
+          articleList.appendChild(card);
         });
       }
     }
@@ -655,10 +671,8 @@
       }
     }
 
-    function showArticle(article, selectedButton) {
+    function showArticle(article, district) {
       if (!articleContent) return;
-      articleList.querySelectorAll('.is-current').forEach(function (node) { node.classList.remove('is-current'); });
-      if (selectedButton) selectedButton.classList.add('is-current');
       var source = new DOMParser().parseFromString(article.html || '', 'text/html');
       source.querySelectorAll('script, iframe, object, embed, form, base, style, link, meta').forEach(function (node) { node.remove(); });
       source.querySelectorAll('*').forEach(function (node) {
@@ -680,9 +694,19 @@
       wrapper.innerHTML = source.body.innerHTML;
       wrapper.prepend(heading);
       articleContent.replaceChildren(wrapper);
+      if (articleReaderDistrict) articleReaderDistrict.textContent = 'DISTRICT / D' + district;
+      if (articleReader) articleReader.setAttribute('aria-hidden', 'false');
+      home.classList.add('has-article-reader');
+      articleReader.scrollTop = 0;
+    }
+
+    function closeArticleReader() {
+      home.classList.remove('has-article-reader');
+      if (articleReader) articleReader.setAttribute('aria-hidden', 'true');
     }
 
     function closeArticles() {
+      closeArticleReader();
       home.classList.remove('has-articles');
       if (articlePanel) articlePanel.setAttribute('aria-hidden', 'true');
       if (articleToggle) {
@@ -774,8 +798,10 @@
       });
     }
     if (articleClose) articleClose.addEventListener('click', closeArticles);
+    if (articleReaderClose) articleReaderClose.addEventListener('click', closeArticleReader);
     document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && home.classList.contains('has-articles')) closeArticles();
+      if (event.key === 'Escape' && home.classList.contains('has-article-reader')) closeArticleReader();
+      else if (event.key === 'Escape' && home.classList.contains('has-articles')) closeArticles();
       else if (event.key === 'Escape' && panel.getAttribute('aria-hidden') === 'false') closePanel();
     });
   }
