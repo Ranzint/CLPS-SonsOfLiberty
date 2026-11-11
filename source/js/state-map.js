@@ -2,33 +2,33 @@
   'use strict';
 
   var states = [
-    ['AL', 'Alabama', 'Montgomery'], ['AK', 'Alaska', 'Juneau'],
-    ['AZ', 'Arizona', 'Phoenix'], ['AR', 'Arkansas', 'Little Rock'],
-    ['CA', 'California', 'Sacramento'], ['CO', 'Colorado', 'Denver'],
-    ['CT', 'Connecticut', 'Hartford'], ['DE', 'Delaware', 'Dover'],
-    ['FL', 'Florida', 'Tallahassee'], ['GA', 'Georgia', 'Atlanta'],
-    ['HI', 'Hawaii', 'Honolulu'], ['ID', 'Idaho', 'Boise'],
-    ['IL', 'Illinois', 'Springfield'], ['IN', 'Indiana', 'Indianapolis'],
-    ['IA', 'Iowa', 'Des Moines'], ['KS', 'Kansas', 'Topeka'],
-    ['KY', 'Kentucky', 'Frankfort'], ['LA', 'Louisiana', 'Baton Rouge'],
-    ['ME', 'Maine', 'Augusta'], ['MD', 'Maryland', 'Annapolis'],
-    ['MA', 'Massachusetts', 'Boston'], ['MI', 'Michigan', 'Lansing'],
-    ['MN', 'Minnesota', 'Saint Paul'], ['MS', 'Mississippi', 'Jackson'],
-    ['MO', 'Missouri', 'Jefferson City'], ['MT', 'Montana', 'Helena'],
-    ['NE', 'Nebraska', 'Lincoln'], ['NV', 'Nevada', 'Carson City'],
-    ['NH', 'New Hampshire', 'Concord'], ['NJ', 'New Jersey', 'Trenton'],
-    ['NM', 'New Mexico', 'Santa Fe'], ['NY', 'New York', 'Albany'],
-    ['NC', 'North Carolina', 'Raleigh'], ['ND', 'North Dakota', 'Bismarck'],
-    ['OH', 'Ohio', 'Columbus'], ['OK', 'Oklahoma', 'Oklahoma City'],
-    ['OR', 'Oregon', 'Salem'], ['PA', 'Pennsylvania', 'Harrisburg'],
-    ['RI', 'Rhode Island', 'Providence'], ['SC', 'South Carolina', 'Columbia'],
-    ['SD', 'South Dakota', 'Pierre'], ['TN', 'Tennessee', 'Nashville'],
-    ['TX', 'Texas', 'Austin'], ['UT', 'Utah', 'Salt Lake City'],
-    ['VT', 'Vermont', 'Montpelier'], ['VA', 'Virginia', 'Richmond'],
-    ['WA', 'Washington', 'Olympia'], ['WV', 'West Virginia', 'Charleston'],
-    ['WI', 'Wisconsin', 'Madison'], ['WY', 'Wyoming', 'Cheyenne']
+    ['AL', 'Alabama', 22], ['AK', 'Alaska', 49],
+    ['AZ', 'Arizona', 48], ['AR', 'Arkansas', 25],
+    ['CA', 'California', 31], ['CO', 'Colorado', 38],
+    ['CT', 'Connecticut', 5], ['DE', 'Delaware', 1],
+    ['FL', 'Florida', 27], ['GA', 'Georgia', 4],
+    ['HI', 'Hawaii', 50], ['ID', 'Idaho', 43],
+    ['IL', 'Illinois', 21], ['IN', 'Indiana', 19],
+    ['IA', 'Iowa', 29], ['KS', 'Kansas', 34],
+    ['KY', 'Kentucky', 15], ['LA', 'Louisiana', 18],
+    ['ME', 'Maine', 23], ['MD', 'Maryland', 7],
+    ['MA', 'Massachusetts', 6], ['MI', 'Michigan', 26],
+    ['MN', 'Minnesota', 32], ['MS', 'Mississippi', 20],
+    ['MO', 'Missouri', 24], ['MT', 'Montana', 41],
+    ['NE', 'Nebraska', 37], ['NV', 'Nevada', 36],
+    ['NH', 'New Hampshire', 9], ['NJ', 'New Jersey', 3],
+    ['NM', 'New Mexico', 47], ['NY', 'New York', 11],
+    ['NC', 'North Carolina', 12], ['ND', 'North Dakota', 39],
+    ['OH', 'Ohio', 17], ['OK', 'Oklahoma', 46],
+    ['OR', 'Oregon', 33], ['PA', 'Pennsylvania', 2],
+    ['RI', 'Rhode Island', 13], ['SC', 'South Carolina', 8],
+    ['SD', 'South Dakota', 40], ['TN', 'Tennessee', 16],
+    ['TX', 'Texas', 28], ['UT', 'Utah', 45],
+    ['VT', 'Vermont', 14], ['VA', 'Virginia', 10],
+    ['WA', 'Washington', 42], ['WV', 'West Virginia', 35],
+    ['WI', 'Wisconsin', 30], ['WY', 'Wyoming', 44]
   ].map(function (item) {
-    return { code: item[0], name: item[1], capital: item[2] };
+    return { code: item[0], name: item[1], order: item[2] };
   });
 
   var divisions = {
@@ -56,6 +56,27 @@
     }) || '—';
   }
 
+  function chineseNumber(number) {
+    var digits = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+    if (number < 10) return digits[number];
+    if (number < 20) return '十' + (number % 10 ? digits[number % 10] : '');
+    var tens = Math.floor(number / 10);
+    var ones = number % 10;
+    return digits[tens] + '十' + (ones ? digits[ones] : '');
+  }
+
+  function companyName(state) {
+    var details = companyDetails(state);
+    return details.chinese + ' ' + details.english;
+  }
+
+  function companyDetails(state) {
+    return {
+      chinese: '第' + chineseNumber(state.order) + '区公司',
+      english: 'District ' + state.order + ' Company'
+    };
+  }
+
   function makeSection(title, rows) {
     var section = document.createElement('section');
     section.className = 'state-info__section';
@@ -70,7 +91,16 @@
       var label = document.createElement('dt');
       label.textContent = row[0];
       var value = document.createElement('dd');
-      value.textContent = row[1];
+      if (row[2] === 'company') {
+        value.className = 'state-info__company-name';
+        var chineseName = document.createElement('span');
+        chineseName.textContent = row[1].chinese;
+        var englishName = document.createElement('strong');
+        englishName.textContent = row[1].english;
+        value.append(chineseName, document.createElement('br'), englishName);
+      } else {
+        value.textContent = row[1];
+      }
       wrapper.append(label, value);
       list.appendChild(wrapper);
     });
@@ -85,7 +115,7 @@
       makeSection('01 / 联邦与区划', [
         ['国家', 'United States'], ['行政层级', '联邦州'], ['联邦区域', regionFor(state.code)],
         ['人口普查分区', divisionFor(state.code)], ['州代码', 'US-' + state.code],
-        ['邮政缩写', state.code], ['州府', state.capital]
+        ['邮政缩写', state.code], ['区公司', companyDetails(state), 'company']
       ]),
       makeSection('02 / 政府与公共机构', [
         ['行政机关', pending], ['立法机构', pending], ['司法机构', pending],
@@ -108,7 +138,7 @@
         ['州箴言', pending], ['州旗与州徽', pending], ['代表性符号', pending]
       ]),
       makeSection('07 / 资料索引', [
-        ['基础记录', '已载入州名、缩写、州府与区划'],
+        ['基础记录', '已载入州名、缩写、区公司编号与区划'],
         ['扩展资料', '此面板为资料模板，可逐州补录'],
         ['最近更新', pending], ['参考来源', pending]
       ])
@@ -163,7 +193,7 @@
       panel.setAttribute('aria-hidden', 'false');
       document.getElementById('state-info-code').textContent = 'STATE / US-' + state.data.code;
       document.getElementById('state-info-title').textContent = state.data.name;
-      document.getElementById('state-info-summary').textContent = '州府 ' + state.data.capital + '　·　' + regionFor(state.data.code) + ' Region';
+      document.getElementById('state-info-summary').textContent = companyName(state.data) + '　·　' + regionFor(state.data.code) + ' Region';
 
       var sections = document.getElementById('state-info-sections');
       sections.replaceChildren.apply(sections, buildSections(state.data));

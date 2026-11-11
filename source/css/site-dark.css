@@ -439,6 +439,11 @@ body.site-home-page #mobile-nav {
   font: 12px/1.45 Arial, sans-serif;
 }
 
+.state-info__company-name strong {
+  color: #fff;
+  font-weight: 700;
+}
+
 @media (max-width: 767px) {
   #header {
     height: 190px;
