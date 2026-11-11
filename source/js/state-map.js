@@ -654,7 +654,10 @@
     function closeArticles() {
       home.classList.remove('has-articles');
       if (articlePanel) articlePanel.setAttribute('aria-hidden', 'true');
-      if (articleToggle) articleToggle.setAttribute('aria-expanded', 'false');
+      if (articleToggle) {
+        articleToggle.setAttribute('aria-expanded', 'false');
+        articleToggle.setAttribute('aria-label', '打开该区文章');
+      }
     }
 
     function closePanel() {
@@ -736,6 +739,7 @@
         home.classList.toggle('has-articles', open);
         articlePanel.setAttribute('aria-hidden', open ? 'false' : 'true');
         articleToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        articleToggle.setAttribute('aria-label', open ? '关闭该区文章' : '打开该区文章');
       });
     }
     if (articleClose) articleClose.addEventListener('click', closeArticles);

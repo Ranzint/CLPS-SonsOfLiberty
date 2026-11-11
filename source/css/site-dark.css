@@ -492,7 +492,7 @@ body.site-home-page #mobile-nav {
   position: fixed;
   z-index: 33;
   top: 0;
-  right: var(--state-info-width, min(440px, 37vw));
+  right: 0;
   display: none;
   place-items: center;
   width: 26px;
@@ -525,9 +525,9 @@ body.site-home-page #mobile-nav {
 
 .state-articles {
   position: fixed;
-  z-index: 28;
+  z-index: 32;
   top: 0;
-  right: var(--state-info-width, min(440px, 37vw));
+  right: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -1267,7 +1267,7 @@ body.site-home-page #mobile-nav {
   }
 
   .state-info__articles-toggle {
-    right: var(--state-info-width, min(88vw, 440px));
+    right: 0;
   }
 
   .state-articles {
@@ -1323,9 +1323,12 @@ body.site-home-page #mobile-nav {
     width: var(--state-info-width);
   }
 
-  .state-info__articles-toggle,
   .state-articles {
-    right: var(--state-info-width, min(430px, 43vw));
+    right: 0;
+  }
+
+  .state-info__articles-toggle {
+    right: 0;
   }
 
   .site-home__credit {
