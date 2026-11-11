@@ -264,6 +264,54 @@ body.site-home-page {
   background: #050505;
 }
 
+.site-home::before,
+.site-home::after {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.site-home::before {
+  z-index: 79;
+  top: -24vh;
+  bottom: auto;
+  height: 24vh;
+  background: linear-gradient(to bottom, transparent, rgba(210, 225, 255, .045), transparent);
+  animation: crt-scan-roll 9s linear infinite;
+}
+
+.site-home::after {
+  z-index: 80;
+  opacity: .24;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, .035) 0,
+    rgba(255, 255, 255, .035) 1px,
+    rgba(0, 0, 0, .12) 1px,
+    rgba(0, 0, 0, .12) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  animation: crt-flicker 180ms steps(2, end) infinite;
+}
+
+@keyframes crt-scan-roll {
+  to { transform: translateY(125vh); }
+}
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: .21; }
+  50% { opacity: .26; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-home::before,
+  .site-home::after {
+    animation: none;
+  }
+}
+
 .site-home__map-area {
   position: fixed;
   z-index: 2;
