@@ -292,6 +292,119 @@ body.site-home-page {
   transition: opacity 900ms ease, filter 900ms ease, transform 900ms ease;
 }
 
+.site-home__sidepanels {
+  position: fixed;
+  z-index: 14;
+  top: max(76px, 10vh);
+  bottom: 132px;
+  left: 16px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  width: min(280px, 24vw);
+  pointer-events: none;
+}
+
+.site-home__sidepanel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  color: #ddd;
+  background: rgba(10, 10, 10, .9);
+  border: 1px solid #303030;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .35);
+  pointer-events: auto;
+  backdrop-filter: blur(8px);
+}
+
+.site-home__sidepanel h2 {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 12px 14px 10px;
+  color: #f0f0f0;
+  border-bottom: 1px solid #303030;
+  font: 11px/1.4 "Courier New", monospace;
+  letter-spacing: .13em;
+}
+
+.site-home__recent-list,
+.site-home__repository-list {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #555 #111;
+}
+
+.site-home__recent-list {
+  padding: 5px 10px;
+}
+
+.site-home__recent-item {
+  display: block;
+  width: 100%;
+  padding: 9px 4px;
+  color: #c9c9c9;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #292929;
+  text-align: left;
+  cursor: pointer;
+}
+
+.site-home__recent-item:hover,
+.site-home__recent-item:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, .06);
+  outline: none;
+}
+
+.site-home__recent-name {
+  display: block;
+  overflow: hidden;
+  font: 11px/1.5 Arial, sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.site-home__recent-meta {
+  display: block;
+  margin-top: 3px;
+  color: #777;
+  font: 9px/1.4 "Courier New", monospace;
+}
+
+.site-home__repository-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 5px;
+  padding: 9px;
+}
+
+.site-home__repository-item {
+  min-width: 0;
+  padding: 7px 5px;
+  color: #aaa;
+  background: #141414;
+  border: 1px solid #303030;
+  text-align: left;
+  font: 9px/1.35 "Courier New", monospace;
+  cursor: pointer;
+}
+
+.site-home__repository-item span {
+  color: #777;
+}
+
+.site-home__repository-item:hover,
+.site-home__repository-item:focus-visible {
+  color: #fff;
+  background: #252525;
+  border-color: #777;
+  outline: none;
+}
+
 .map-zoom {
   position: absolute;
   z-index: 5;
@@ -1326,6 +1439,45 @@ body.site-home-page #mobile-nav {
 
   .site-home__title {
     font-size: clamp(20px, 5.5vw, 29px);
+  }
+
+  .site-home__sidepanels {
+    top: 58px;
+    bottom: 118px;
+    left: 8px;
+    width: min(42vw, 230px);
+    gap: 7px;
+  }
+
+  .site-home__sidepanel h2 {
+    padding: 9px 8px 7px;
+    font-size: 9px;
+  }
+
+  .site-home__recent-list {
+    padding: 4px 6px;
+  }
+
+  .site-home__recent-item {
+    padding: 7px 2px;
+  }
+
+  .site-home__recent-name {
+    font-size: 10px;
+  }
+
+  .site-home__recent-meta {
+    font-size: 8px;
+  }
+
+  .site-home__repository-list {
+    gap: 4px;
+    padding: 6px;
+  }
+
+  .site-home__repository-item {
+    padding: 6px 3px;
+    font-size: 8px;
   }
 
   .site-home__map {

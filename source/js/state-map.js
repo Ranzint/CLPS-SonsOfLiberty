@@ -344,6 +344,13 @@
     } catch (error) {
       districtArticles = {};
     }
+    var recentArticles = [];
+    try {
+      var recentData = document.getElementById('recent-article-data');
+      recentArticles = JSON.parse(recentData && recentData.textContent || '[]');
+    } catch (error) {
+      recentArticles = [];
+    }
 
     var mapDoc = mapObject.contentDocument;
     var svg = mapDoc && mapDoc.documentElement;
@@ -693,6 +700,62 @@
           button.addEventListener('click', function () { selectDistrict(number); });
           districtList.appendChild(button);
         })(districtNumber);
+      }
+    }
+
+    var recentList = document.getElementById('home-recent-list');
+    if (recentList) {
+      recentArticles.forEach(function (recent) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'site-home__recent-item';
+        var name = document.createElement('span');
+        name.className = 'site-home__recent-name';
+        name.textContent = recent.title;
+        var meta = document.createElement('span');
+        meta.className = 'site-home__recent-meta';
+        meta.textContent = 'D' + recent.district + ' · ' + new Date(recent.updated).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
+        button.append(name, meta);
+        button.addEventListener('click', function () {
+          selectDistrict(recent.district);
+          openDistrictArticles(recent.district);
+          var article = (districtArticles[String(recent.district)] || []).filter(function (item) {
+            return item.filename === recent.filename;
+          })[0];
+          if (article) showArticle(article, recent.district);
+        });
+        recentList.appendChild(button);
+      });
+    }
+
+    var repositoryList = document.getElementById('home-repository-list');
+    if (repositoryList) {
+      for (var repositoryDistrict = 1; repositoryDistrict <= 50; repositoryDistrict++) {
+        (function (number) {
+          var button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'site-home__repository-item';
+          var count = (districtArticles[String(number)] || []).length;
+          button.append('D' + number + ' ');
+          var details = document.createElement('span');
+          details.textContent = count + ' 篇';
+          button.appendChild(details);
+          button.addEventListener('click', function () {
+            selectDistrict(number);
+            openDistrictArticles(number);
+          });
+          repositoryList.appendChild(button);
+        })(repositoryDistrict);
+      }
+    }
+
+    function openDistrictArticles(number) {
+      selectDistrict(number);
+      home.classList.add('has-articles');
+      if (articlePanel) articlePanel.setAttribute('aria-hidden', 'false');
+      if (articleToggle) {
+        articleToggle.setAttribute('aria-expanded', 'true');
+        articleToggle.setAttribute('aria-label', '关闭该区文章');
       }
     }
 
