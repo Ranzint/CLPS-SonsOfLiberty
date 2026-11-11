@@ -637,11 +637,26 @@
         articles.forEach(function (article, index) {
           var card = document.createElement('article');
           card.className = 'state-articles__card';
-          var image = document.createElement('img');
-          image.className = 'state-articles__card-image';
-          image.src = thumbnail;
-          image.alt = '';
-          image.loading = 'lazy';
+          var articleDocument = new DOMParser().parseFromString(article.html || '', 'text/html');
+          var coverVideo = articleDocument.querySelector('video');
+          var coverSource = coverVideo && (coverVideo.getAttribute('src') || (coverVideo.querySelector('source') && coverVideo.querySelector('source').getAttribute('src')));
+          var image;
+          if (coverSource) {
+            image = document.createElement('video');
+            image.className = 'state-articles__card-image';
+            image.src = coverSource;
+            if (coverVideo.getAttribute('poster')) image.poster = coverVideo.getAttribute('poster');
+            image.controls = true;
+            image.playsInline = true;
+            image.preload = 'metadata';
+            image.setAttribute('aria-label', (article.title || article.filename) + '封面视频');
+          } else {
+            image = document.createElement('img');
+            image.className = 'state-articles__card-image';
+            image.src = thumbnail;
+            image.alt = '';
+            image.loading = 'lazy';
+          }
           var title = document.createElement('h3');
           title.className = 'state-articles__card-title';
           title.textContent = article.title || article.filename;

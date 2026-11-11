@@ -649,6 +649,14 @@ body.site-home-page #mobile-nav {
   background: #090909;
 }
 
+.state-articles__html .art-video-cover {
+  display: block;
+  width: 100%;
+  max-height: 72vh;
+  margin: 18px auto 28px;
+  background: #000;
+}
+
 .state-articles__card-title {
   display: -webkit-box;
   min-height: 2.8em;
