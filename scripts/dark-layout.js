@@ -67,6 +67,7 @@
       .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
     const home = `<main class="site-home" aria-labelledby="site-home-title">
   <h1 id="site-home-title" class="site-home__title">${title}</h1>
+  <img class="site-home__moon" id="site-home-moon" src="${root}images/moon.png" alt="" aria-hidden="true">
   <div class="site-home__map-area">
     <object class="site-home__map" id="state-map" type="image/svg+xml" data="${root}images/north-america-map.svg" data-icon-url="${root}images/state-placeholder.png" aria-label="北美洲地图。选择任一美国州查看资料。"></object>
     <div class="map-zoom" role="group" aria-label="地图缩放">
