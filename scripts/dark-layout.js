@@ -26,6 +26,38 @@
       : [];
     const musicPlaylist = JSON.stringify(musicTracks)
       .replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    const libraryAssets = [];
+    const sourceDirectory = path.resolve(hexo.base_dir, hexo.config.source_dir || 'source');
+    ['images', 'music', 'fonts', 'videos'].forEach(directoryName => {
+      const directory = path.join(sourceDirectory, directoryName);
+      if (!fs.existsSync(directory)) return;
+      const visit = currentDirectory => {
+        fs.readdirSync(currentDirectory, { withFileTypes: true }).forEach(entry => {
+          if (entry.name === '.gitkeep' || entry.name.toLowerCase().endsWith('.lnk')) return;
+          const absolutePath = path.join(currentDirectory, entry.name);
+          if (entry.isDirectory()) {
+            visit(absolutePath);
+            return;
+          }
+          const relativePath = path.relative(sourceDirectory, absolutePath).split(path.sep).join('/');
+          const extension = path.extname(entry.name).toLowerCase();
+          const type = /\.(png|jpe?g|gif|webp|svg|avif)$/.test(extension) ? 'image'
+            : /\.(mp3|wav|ogg|m4a|flac)$/.test(extension) ? 'audio'
+              : /\.(mp4|webm|mov)$/.test(extension) ? 'video'
+                : 'file';
+          libraryAssets.push({
+            name: entry.name,
+            path: relativePath,
+            url: root + relativePath.split('/').map(encodeURIComponent).join('/'),
+            type,
+            size: fs.statSync(absolutePath).size
+          });
+        });
+      };
+      visit(directory);
+    });
+    const libraryAssetsJson = JSON.stringify(libraryAssets)
+      .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
     const stateDataDirectory = path.resolve(hexo.base_dir, 'state-data', 'states');
     const stateImageDirectory = path.resolve(hexo.base_dir, hexo.config.source_dir || 'source', 'images', 'states');
     const stateProfiles = {};
@@ -102,7 +134,7 @@
     </section>
     <section class="site-home__sidepanel" aria-labelledby="home-library-title">
       <h2 id="home-library-title">资料仓库</h2>
-      <nav class="site-home__repository-list" id="home-repository-list" aria-label="五十区资料仓库"></nav>
+      <nav class="site-home__repository-list" id="home-repository-list" aria-label="已有素材文件"></nav>
     </section>
   </aside>
   <div class="site-home__map-area">
@@ -118,14 +150,15 @@
   <script id="state-profile-data" type="application/json">${stateProfilesJson}</script>
   <script id="district-article-data" type="application/json">${districtArticlesJson}</script>
   <script id="recent-article-data" type="application/json">${recentArticlesJson}</script>
+  <script id="site-library-data" type="application/json">${libraryAssetsJson}</script>
   <audio id="site-music" preload="auto" data-playlist="${musicPlaylist}"></audio>
   <div class="site-audio" id="site-audio-player">
     <button class="site-audio__toggle" id="site-audio-toggle" type="button" aria-label="播放背景音乐">▶</button>
     <button class="site-audio__next" id="site-audio-next" type="button" aria-label="跳过当前曲目">»</button>
-    <span class="site-audio__status" id="site-audio-status" aria-live="polite">RANDOM PLAYLIST · 2 TRACKS</span>
+    <span class="site-audio__status" id="site-audio-status" aria-live="polite">RANDOM PLAYLIST · ${musicTracks.length} TRACKS</span>
     <label class="site-audio__volume-label" for="site-audio-volume">VOL</label>
-    <input class="site-audio__volume" id="site-audio-volume" type="range" min="0" max="1" step="0.01" value="0.52" aria-label="背景音乐音量">
-    <output class="site-audio__volume-value" id="site-audio-volume-value" for="site-audio-volume">52%</output>
+    <input class="site-audio__volume" id="site-audio-volume" type="range" min="0" max="1" step="0.01" value="0.15" aria-label="背景音乐音量">
+    <output class="site-audio__volume-value" id="site-audio-volume-value" for="site-audio-volume">15%</output>
   </div>
   <aside class="state-info" id="state-info" aria-hidden="true" aria-labelledby="state-info-title">
     <div class="state-info__topline">

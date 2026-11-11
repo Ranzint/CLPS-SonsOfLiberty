@@ -182,7 +182,7 @@
     var userPaused = false;
     var fadeFrame = 0;
     var fadeOutStarted = false;
-    var targetVolume = volumeControl ? Number(volumeControl.value) : 0.52;
+    var targetVolume = volumeControl ? Number(volumeControl.value) : 0.15;
 
     if (volumeValue) volumeValue.textContent = Math.round(targetVolume * 100) + '%';
 
@@ -350,6 +350,13 @@
       recentArticles = JSON.parse(recentData && recentData.textContent || '[]');
     } catch (error) {
       recentArticles = [];
+    }
+    var libraryAssets = [];
+    try {
+      var libraryData = document.getElementById('site-library-data');
+      libraryAssets = JSON.parse(libraryData && libraryData.textContent || '[]');
+    } catch (error) {
+      libraryAssets = [];
     }
 
     var mapDoc = mapObject.contentDocument;
@@ -588,7 +595,7 @@
     markers.setAttribute('pointer-events', 'none');
     svg.appendChild(markers);
 
-    function setState(state) {
+    function setState(state, preserveFocus) {
       if (!state) return;
       if (selected) selected.node.classList.remove('is-selected');
 
@@ -610,7 +617,7 @@
       var sections = document.getElementById('state-info-sections');
       sections.replaceChildren.apply(sections, buildSections(state.data, profile));
       if (articlePanel && articleList && articleContent) selectDistrict(state.data.order);
-      closeButton.focus({ preventScroll: true });
+      if (!preserveFocus) closeButton.focus({ preventScroll: true });
     }
 
     function selectDistrict(number) {
@@ -652,7 +659,10 @@
           if (coverFrame) {
             image = document.createElement('iframe');
             image.className = 'state-articles__card-image';
-            image.src = coverFrame.getAttribute('src');
+            var coverUrl = new URL(coverFrame.getAttribute('src'), window.location.href);
+            coverUrl.searchParams.set('autoplay', '1');
+            coverUrl.searchParams.set('muted', '1');
+            image.src = coverUrl.href;
             image.title = (article.title || article.filename) + '封面播放器';
             image.loading = 'lazy';
             image.referrerPolicy = 'strict-origin-when-cross-origin';
@@ -697,7 +707,7 @@
           button.textContent = 'D' + number;
           button.setAttribute('data-district', String(number));
           button.setAttribute('aria-pressed', 'false');
-          button.addEventListener('click', function () { selectDistrict(number); });
+          button.addEventListener('click', function () { openDistrictArticles(number); });
           districtList.appendChild(button);
         })(districtNumber);
       }
@@ -730,27 +740,52 @@
 
     var repositoryList = document.getElementById('home-repository-list');
     if (repositoryList) {
-      for (var repositoryDistrict = 1; repositoryDistrict <= 50; repositoryDistrict++) {
-        (function (number) {
-          var button = document.createElement('button');
-          button.type = 'button';
-          button.className = 'site-home__repository-item';
-          var count = (districtArticles[String(number)] || []).length;
-          button.append('D' + number + ' ');
-          var details = document.createElement('span');
-          details.textContent = count + ' 篇';
-          button.appendChild(details);
-          button.addEventListener('click', function () {
-            selectDistrict(number);
-            openDistrictArticles(number);
-          });
-          repositoryList.appendChild(button);
-        })(repositoryDistrict);
+      if (!libraryAssets.length) {
+        var noAssets = document.createElement('p');
+        noAssets.className = 'site-home__library-empty';
+        noAssets.textContent = '暂时没有可展示的素材文件。';
+        repositoryList.appendChild(noAssets);
       }
+      libraryAssets.forEach(function (asset) {
+        var link = document.createElement('a');
+        link.className = 'site-home__repository-item';
+        link.href = asset.url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.setAttribute('aria-label', asset.path);
+        if (asset.type === 'image') {
+          var preview = document.createElement('img');
+          preview.className = 'site-home__repository-preview';
+          preview.src = asset.url;
+          preview.alt = '';
+          preview.loading = 'lazy';
+          link.appendChild(preview);
+        } else {
+          var badge = document.createElement('span');
+          badge.className = 'site-home__repository-type';
+          badge.textContent = asset.type.toUpperCase();
+          link.appendChild(badge);
+        }
+        var filename = document.createElement('span');
+        filename.className = 'site-home__repository-name';
+        filename.textContent = asset.name;
+        var fileMeta = document.createElement('span');
+        fileMeta.className = 'site-home__repository-meta';
+        fileMeta.textContent = asset.path + ' · ' + formatFileSize(asset.size);
+        link.append(filename, fileMeta);
+        repositoryList.appendChild(link);
+      });
+    }
+
+    function formatFileSize(size) {
+      if (size >= 1024 * 1024) return (size / (1024 * 1024)).toFixed(1) + ' MB';
+      if (size >= 1024) return Math.round(size / 1024) + ' KB';
+      return size + ' B';
     }
 
     function openDistrictArticles(number) {
       selectDistrict(number);
+      lockDistrictOnMap(number);
       home.classList.add('has-articles');
       if (articlePanel) articlePanel.setAttribute('aria-hidden', 'false');
       if (articleToggle) {
@@ -831,6 +866,12 @@
     }
 
     var stateEntries = Object.create(null);
+    function lockDistrictOnMap(number) {
+      var districtState = states.filter(function (state) { return state.order === Number(number); })[0];
+      var entry = districtState && stateEntries[districtState.code];
+      if (entry) setState(entry, true);
+    }
+
     states.forEach(function (data) {
       var node = svg.querySelector('#US-' + data.code);
       if (!node) return;
