@@ -125,7 +125,7 @@
     var pending = '待补充';
     return [
       makeSection('01 / 基本信息', [
-        ['国家', '联邦'], ['行政类型', '区公司'], ['联邦区域', regionFor(state.code)],
+        ['国家', '联邦'], ['行政类型', '区公司'],
         ['区代码', 'D' + state.order], ['分级', '-'], ['区公司', companyDetails(state), 'company']
       ]),
       makeSection('02 / 简介', [
@@ -386,6 +386,24 @@
     var iconUrl = mapObject.getAttribute('data-icon-url');
     var iconNs = 'http://www.w3.org/2000/svg';
     var initialView = svg.viewBox.baseVal;
+    var rotationCenterX = initialView.x + initialView.width / 2;
+    var rotationCenterY = initialView.y + initialView.height / 2;
+    var rotationGroup = mapDoc.createElementNS(iconNs, 'g');
+    rotationGroup.setAttribute('id', 'site-map-rotated-content');
+    rotationGroup.setAttribute('transform', 'rotate(90 ' + rotationCenterX + ' ' + rotationCenterY + ')');
+    Array.prototype.slice.call(svg.children).forEach(function (child) {
+      if (['metadata', 'defs', 'style', 'namedview'].indexOf(child.localName) === -1) {
+        rotationGroup.appendChild(child);
+      }
+    });
+    svg.appendChild(rotationGroup);
+    svg.setAttribute('viewBox', [
+      rotationCenterX - initialView.height / 2,
+      rotationCenterY - initialView.width / 2,
+      initialView.height,
+      initialView.width
+    ].join(' '));
+    initialView = svg.viewBox.baseVal;
     var sourceBounds = { x: initialView.x, y: initialView.y, width: initialView.width, height: initialView.height };
     var viewBounds;
     function fitBoundsToBrowser() {

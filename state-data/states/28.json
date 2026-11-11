@@ -1,6 +1,6 @@
 {
   "title": "Texas",
-  "subtitle": "第二十八区公司 District 28 Company · South Region",
+  "subtitle": "第二十八区公司 District 28 Company · Tesla",
   "image": "cover.png",
   "sections": [
     {
@@ -14,10 +14,6 @@
         {
           "subtitle": "行政类型",
           "content": "区公司"
-        },
-        {
-          "subtitle": "联邦区域",
-          "content": "South"
         },
         {
           "subtitle": "区代码",
