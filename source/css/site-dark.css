@@ -305,6 +305,35 @@ body.site-home-page {
   pointer-events: none;
 }
 
+.site-home__district-link {
+  position: fixed;
+  z-index: 31;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: visible;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.site-home.has-district-link .site-home__district-link {
+  visibility: visible;
+}
+
+.site-home__district-link path {
+  fill: none;
+  stroke: rgba(235, 241, 255, .78);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 4px rgba(205, 222, 255, .8));
+}
+
+.site-home__district-link circle {
+  fill: #fff;
+  stroke: rgba(195, 215, 255, .9);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 5px rgba(205, 222, 255, .9));
+}
+
 .site-home__sidepanel {
   display: flex;
   flex-direction: column;

@@ -137,6 +137,10 @@
       <nav class="site-home__repository-list" id="home-repository-list" aria-label="已有素材文件"></nav>
     </section>
   </aside>
+  <svg class="site-home__district-link" id="district-map-link" aria-hidden="true" focusable="false">
+    <path id="district-map-link-path"></path>
+    <circle id="district-map-link-point" r="4"></circle>
+  </svg>
   <div class="site-home__map-area">
     <object class="site-home__map" id="state-map" type="image/svg+xml" data="${root}images/north-america-map.svg" data-icon-url="${root}images/state-placeholder.png" aria-label="北美洲地图。选择任一美国州查看资料。"></object>
     <div class="map-zoom" role="group" aria-label="地图缩放">

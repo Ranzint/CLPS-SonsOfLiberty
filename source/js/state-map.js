@@ -365,6 +365,10 @@
     init.initialized = true;
 
     var selected = null;
+    var currentDistrict = 0;
+    var connectorSvg = document.getElementById('district-map-link');
+    var connectorPath = document.getElementById('district-map-link-path');
+    var connectorPoint = document.getElementById('district-map-link-point');
     var iconUrl = mapObject.getAttribute('data-icon-url');
     var iconNs = 'http://www.w3.org/2000/svg';
     var initialView = svg.viewBox.baseVal;
@@ -441,6 +445,7 @@
       zoomLevel = viewBounds.width / box.width;
       if (zoomReadout) zoomReadout.textContent = zoomLevel.toFixed(1).replace(/\.0$/, '') + '×';
       updateMoon();
+      updateDistrictConnector();
     }
 
     function pointAt(clientX, clientY) {
@@ -617,12 +622,14 @@
       var sections = document.getElementById('state-info-sections');
       sections.replaceChildren.apply(sections, buildSections(state.data, profile));
       if (articlePanel && articleList && articleContent) selectDistrict(state.data.order);
+      updateDistrictConnector();
       if (!preserveFocus) closeButton.focus({ preventScroll: true });
     }
 
     function selectDistrict(number) {
       if (!articlePanel || !articleList || !articleContent) return;
       var district = Math.max(1, Math.min(50, Number(number) || 1));
+      currentDistrict = district;
       document.getElementById('state-articles-code').textContent = 'DISTRICT / D' + district;
       document.getElementById('state-articles-title').textContent = 'D' + district + ' · 第' + chineseNumber(district) + '区公司';
       if (districtList) {
@@ -696,6 +703,7 @@
           articleList.appendChild(card);
         });
       }
+      updateDistrictConnector();
     }
 
     if (districtList) {
@@ -792,6 +800,7 @@
         articleToggle.setAttribute('aria-expanded', 'true');
         articleToggle.setAttribute('aria-label', '关闭该区文章');
       }
+      requestAnimationFrame(updateDistrictConnector);
     }
 
     function showArticle(article, district) {
@@ -843,12 +852,15 @@
     function closeArticleReader() {
       home.classList.remove('has-article-reader');
       if (articleReader) articleReader.setAttribute('aria-hidden', 'true');
+      if (articleContent) articleContent.replaceChildren();
     }
 
     function closeArticles() {
       closeArticleReader();
       home.classList.remove('has-articles');
+      home.classList.remove('has-district-link');
       if (articlePanel) articlePanel.setAttribute('aria-hidden', 'true');
+      if (articleList) articleList.replaceChildren();
       if (articleToggle) {
         articleToggle.setAttribute('aria-expanded', 'false');
         articleToggle.setAttribute('aria-label', '打开该区文章');
@@ -871,6 +883,42 @@
       var entry = districtState && stateEntries[districtState.code];
       if (entry) setState(entry, true);
     }
+
+    function updateDistrictConnector() {
+      if (!connectorSvg || !connectorPath || !connectorPoint || !home.classList.contains('has-articles') || !selected || !districtList) {
+        home.classList.remove('has-district-link');
+        return;
+      }
+      var button = districtList.querySelector('.state-articles__district.is-current');
+      if (!button) {
+        home.classList.remove('has-district-link');
+        return;
+      }
+      var box;
+      var matrix;
+      try {
+        box = selected.node.getBBox();
+        matrix = selected.node.getScreenCTM();
+      } catch (error) {
+        home.classList.remove('has-district-link');
+        return;
+      }
+      if (!matrix) return;
+      var mapPoint = new DOMPoint(box.x + box.width / 2, box.y + box.height / 2).matrixTransform(matrix);
+      var buttonRect = button.getBoundingClientRect();
+      var endX = buttonRect.left;
+      var endY = buttonRect.top + buttonRect.height / 2;
+      var middleX = mapPoint.x + (endX - mapPoint.x) * 0.58;
+      connectorSvg.setAttribute('viewBox', '0 0 ' + window.innerWidth + ' ' + window.innerHeight);
+      connectorSvg.setAttribute('preserveAspectRatio', 'none');
+      connectorPath.setAttribute('d', 'M ' + mapPoint.x + ' ' + mapPoint.y + ' C ' + middleX + ' ' + mapPoint.y + ', ' + middleX + ' ' + endY + ', ' + endX + ' ' + endY);
+      connectorPoint.setAttribute('cx', mapPoint.x);
+      connectorPoint.setAttribute('cy', mapPoint.y);
+      home.classList.add('has-district-link');
+    }
+
+    if (districtList) districtList.addEventListener('scroll', updateDistrictConnector, { passive: true });
+    if (articlePanel) articlePanel.addEventListener('transitionend', updateDistrictConnector);
 
     states.forEach(function (data) {
       var node = svg.querySelector('#US-' + data.code);
@@ -937,10 +985,8 @@
     if (articleToggle && articlePanel) {
       articleToggle.addEventListener('click', function () {
         var open = !home.classList.contains('has-articles');
-        home.classList.toggle('has-articles', open);
-        articlePanel.setAttribute('aria-hidden', open ? 'false' : 'true');
-        articleToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        articleToggle.setAttribute('aria-label', open ? '关闭该区文章' : '打开该区文章');
+        if (open) openDistrictArticles(currentDistrict || (selected && selected.data.order) || 1);
+        else closeArticles();
       });
     }
     if (articleClose) articleClose.addEventListener('click', closeArticles);
