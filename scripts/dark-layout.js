@@ -59,10 +59,7 @@
         : [];
       districtArticles[number] = files.map(filename => {
         const html = fs.readFileSync(path.join(directory, filename), 'utf8');
-        const titleMatch = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html);
-        const title = titleMatch
-          ? titleMatch[1].replace(/<[^>]+>/g, '').trim()
-          : path.basename(filename, path.extname(filename));
+        const title = path.basename(filename, path.extname(filename));
         return { title, filename, html };
       });
     }

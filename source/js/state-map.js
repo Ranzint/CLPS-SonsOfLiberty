@@ -624,7 +624,12 @@
       });
       var wrapper = document.createElement('div');
       wrapper.className = 'state-articles__html';
+      var heading = document.createElement('h1');
+      heading.textContent = article.title || article.filename;
+      var originalHeading = source.body.querySelector('h1');
+      if (originalHeading) originalHeading.remove();
       wrapper.innerHTML = source.body.innerHTML;
+      wrapper.prepend(heading);
       articleContent.replaceChildren(wrapper);
     }
 
