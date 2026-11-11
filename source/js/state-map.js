@@ -370,6 +370,13 @@
     var svg = mapDoc && mapDoc.documentElement;
     if (!svg || svg.localName !== 'svg') return;
     init.initialized = true;
+    var mapBackgroundUrl = mapObject.getAttribute('data-background-url');
+    if (mapBackgroundUrl) {
+      svg.style.backgroundImage = 'url("' + mapBackgroundUrl + '")';
+      svg.style.backgroundPosition = 'center';
+      svg.style.backgroundRepeat = 'no-repeat';
+      svg.style.backgroundSize = 'cover';
+    }
 
     var selected = null;
     var currentDistrict = 0;
