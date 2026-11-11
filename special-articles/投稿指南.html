@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>投稿指南</title>
+</head>
+<body>
+<article>
+<h1>投稿指南</h1>
+<p>欢迎向 Sons of Liberty 资料站投稿。请先确定文章所属的区号，再将文章文件放入对应数字文件夹。</p>
+
+<h2>文章位置与命名</h2>
+<ul>
+<li>区号为 D1 的文章放在 <code>articles/1/</code>，D33 的文章放在 <code>articles/33/</code>，其余区号依此类推。</li>
+<li>每篇文章使用独立的 HTML 文件，文件名（不含扩展名）就是文章标题，例如 <code>articles/33/纳西瑟斯号剪影.html</code>。</li>
+<li>请在正文顶部提供清晰的标题，并按段落组织文章内容。</li>
+</ul>
+
+<h2>图片、音频与视频</h2>
+<ul>
+<li>图片放入 <code>source/images/</code> 下合适的目录，再在文章中引用站点路径。</li>
+<li>背景音乐文件放入 <code>source/music/</code>，网站会自动将 MP3 加入随机播放列表。</li>
+<li>请将单个仓库文件控制在 50 MB 以内，不要把大视频直接提交到仓库。可使用 Bilibili 等视频平台的外链播放器，并将播放器放在文章开头作为封面。</li>
+<li>视频外链应使用可信平台的官方嵌入地址，并提供可访问的原视频链接。</li>
+</ul>
+
+<h2>格式与发布</h2>
+<ul>
+<li>文章可使用常规 HTML 标题、段落、列表、链接、图片、表格和视频播放器。</li>
+<li>发布前检查文章标题、区号、链接和素材路径是否正确。</li>
+<li>准备完成后，在工程根目录运行 <code>publish.bat</code>。脚本会将更改推送到 GitHub，之后由网站部署流程生成静态页面。</li>
+</ul>
+
+<p>如需更新已有文章，请编辑对应区号文件夹中的同名文件；最近更新面板会根据提交记录展示最新文章。</p>
+</article>
+</body>
+</html>

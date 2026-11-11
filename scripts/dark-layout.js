@@ -124,16 +124,25 @@
       .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
     const districtArticlesJson = JSON.stringify(districtArticles)
       .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
+    const contributionGuidePath = path.join(hexo.base_dir, 'special-articles', '投稿指南.html');
+    const contributionGuideHtml = fs.existsSync(contributionGuidePath)
+      ? fs.readFileSync(contributionGuidePath, 'utf8')
+      : '<article><h1>投稿指南</h1><p>请将文章放入对应区号文件夹。</p></article>';
+    const contributionGuideJson = JSON.stringify(contributionGuideHtml)
+      .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
     const home = `<main class="site-home" aria-labelledby="site-home-title">
   <h1 id="site-home-title" class="site-home__title">${title}</h1>
   <img class="site-home__moon" id="site-home-moon" src="${root}images/moon.png" alt="" aria-hidden="true">
+  <button class="site-home__guide-button" id="site-contribution-guide" type="button" aria-label="打开投稿指南">
+    <span>投稿指南</span>
+  </button>
   <aside class="site-home__sidepanels" aria-label="站点资料导航">
     <section class="site-home__sidepanel" aria-labelledby="home-recent-title">
-      <h2 id="home-recent-title">最近更新</h2>
+      <header class="site-home__sidepanel-heading"><h2 id="home-recent-title">最近更新</h2><button class="site-home__sidepanel-toggle" type="button" aria-label="收起最近更新" aria-expanded="true" aria-controls="home-recent-list"><span aria-hidden="true">‹</span></button></header>
       <nav class="site-home__recent-list" id="home-recent-list" aria-label="最近更新的文章"></nav>
     </section>
     <section class="site-home__sidepanel" aria-labelledby="home-library-title">
-      <h2 id="home-library-title">资料仓库</h2>
+      <header class="site-home__sidepanel-heading"><h2 id="home-library-title">资料仓库</h2><button class="site-home__sidepanel-toggle" type="button" aria-label="收起资料仓库" aria-expanded="true" aria-controls="home-repository-list"><span aria-hidden="true">‹</span></button></header>
       <nav class="site-home__repository-list" id="home-repository-list" aria-label="已有素材文件"></nav>
     </section>
   </aside>
@@ -155,6 +164,7 @@
   <script id="district-article-data" type="application/json">${districtArticlesJson}</script>
   <script id="recent-article-data" type="application/json">${recentArticlesJson}</script>
   <script id="site-library-data" type="application/json">${libraryAssetsJson}</script>
+  <script id="contribution-guide-data" type="application/json">${contributionGuideJson}</script>
   <audio id="site-music" preload="auto" data-playlist="${musicPlaylist}"></audio>
   <div class="site-audio" id="site-audio-player">
     <button class="site-audio__toggle" id="site-audio-toggle" type="button" aria-label="播放背景音乐">▶</button>

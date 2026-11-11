@@ -345,16 +345,102 @@ body.site-home-page {
   box-shadow: 0 8px 28px rgba(0, 0, 0, .35);
   pointer-events: auto;
   backdrop-filter: blur(8px);
+  transition: transform 320ms cubic-bezier(.2,.75,.25,1);
 }
 
-.site-home__sidepanel h2 {
+.site-home__sidepanel-heading {
   flex: 0 0 auto;
-  margin: 0;
-  padding: 12px 14px 10px;
-  color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 39px;
+  padding: 0 7px 0 14px;
   border-bottom: 1px solid #303030;
+}
+
+.site-home__sidepanel-heading h2 {
+  margin: 0;
+  color: #f0f0f0;
   font: 11px/1.4 "Courier New", monospace;
   letter-spacing: .13em;
+}
+
+.site-home__sidepanel-toggle {
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  color: #ddd;
+  background: #1b1b1b;
+  border: 1px solid #383838;
+  font: 20px/20px Arial, sans-serif;
+  cursor: pointer;
+  transition: color 180ms ease, background 180ms ease, transform 240ms ease;
+}
+
+.site-home__sidepanel-toggle:hover,
+.site-home__sidepanel-toggle:focus-visible {
+  color: #050505;
+  background: #fff;
+  outline: none;
+}
+
+.site-home__sidepanel.is-collapsed {
+  transform: translateX(calc(-100% + 30px));
+}
+
+.site-home__sidepanel.is-collapsed .site-home__sidepanel-heading h2,
+.site-home__sidepanel.is-collapsed .site-home__recent-list,
+.site-home__sidepanel.is-collapsed .site-home__repository-list {
+  visibility: hidden;
+}
+
+.site-home__sidepanel.is-collapsed .site-home__sidepanel-toggle span {
+  display: inline-block;
+  transform: rotate(180deg);
+}
+
+.site-home__guide-button {
+  position: fixed;
+  z-index: 16;
+  top: 14px;
+  left: 16px;
+  display: grid;
+  place-items: center;
+  width: min(280px, 24vw);
+  height: 46px;
+  padding: 0;
+  overflow: hidden;
+  color: #050505;
+  background: #f4f4f4;
+  border: 1px solid #fff;
+  cursor: pointer;
+}
+
+.site-home__guide-button::before {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(0, 0, 0, .09);
+  content: "SUBMISSION";
+  font: 900 21px/1 Arial, sans-serif;
+  letter-spacing: .1em;
+  white-space: nowrap;
+}
+
+.site-home__guide-button span {
+  position: relative;
+  z-index: 1;
+  font: 700 15px/1 Arial, sans-serif;
+  letter-spacing: .18em;
+}
+
+.site-home__guide-button:hover,
+.site-home__guide-button:focus-visible {
+  background: #fff;
+  outline: 2px solid #aaa;
+  outline-offset: 2px;
 }
 
 .site-home__recent-list,
@@ -1519,9 +1605,34 @@ body.site-home-page #mobile-nav {
     gap: 7px;
   }
 
-  .site-home__sidepanel h2 {
-    padding: 9px 8px 7px;
+  .site-home__guide-button {
+    top: 8px;
+    left: 8px;
+    width: min(42vw, 230px);
+    height: 40px;
+  }
+
+  .site-home__guide-button::before {
+    font-size: 16px;
+  }
+
+  .site-home__guide-button span {
+    font-size: 13px;
+  }
+
+  .site-home__sidepanel-heading {
+    min-height: 34px;
+    padding-left: 8px;
+  }
+
+  .site-home__sidepanel-heading h2 {
     font-size: 9px;
+  }
+
+  .site-home__sidepanel-toggle {
+    flex-basis: 23px;
+    width: 23px;
+    height: 23px;
   }
 
   .site-home__recent-list {

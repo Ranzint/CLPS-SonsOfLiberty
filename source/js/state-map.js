@@ -358,6 +358,13 @@
     } catch (error) {
       libraryAssets = [];
     }
+    var contributionGuideHtml = '';
+    try {
+      var guideData = document.getElementById('contribution-guide-data');
+      contributionGuideHtml = JSON.parse(guideData && guideData.textContent || '""');
+    } catch (error) {
+      contributionGuideHtml = '';
+    }
 
     var mapDoc = mapObject.contentDocument;
     var svg = mapDoc && mapDoc.documentElement;
@@ -791,6 +798,24 @@
       return size + ' B';
     }
 
+    document.querySelectorAll('.site-home__sidepanel-toggle').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var sidepanel = button.closest('.site-home__sidepanel');
+        if (!sidepanel) return;
+        var collapsed = sidepanel.classList.toggle('is-collapsed');
+        var title = sidepanel.querySelector('h2');
+        button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        button.setAttribute('aria-label', (collapsed ? '展开' : '收起') + (title ? title.textContent : '面板'));
+      });
+    });
+
+    var guideButton = document.getElementById('site-contribution-guide');
+    if (guideButton) {
+      guideButton.addEventListener('click', function () {
+        showArticle({ title: '投稿指南', filename: '投稿指南.html', html: contributionGuideHtml }, null, 'SPECIAL / 投稿指南');
+      });
+    }
+
     function openDistrictArticles(number) {
       selectDistrict(number);
       lockDistrictOnMap(number);
@@ -803,7 +828,7 @@
       requestAnimationFrame(updateDistrictConnector);
     }
 
-    function showArticle(article, district) {
+    function showArticle(article, district, sectionLabel) {
       if (!articleContent) return;
       var source = new DOMParser().parseFromString(article.html || '', 'text/html');
       source.querySelectorAll('script, object, embed, form, base, style, link, meta').forEach(function (node) { node.remove(); });
@@ -843,7 +868,7 @@
       wrapper.innerHTML = source.body.innerHTML;
       wrapper.prepend(heading);
       articleContent.replaceChildren(wrapper);
-      if (articleReaderDistrict) articleReaderDistrict.textContent = 'DISTRICT / D' + district;
+      if (articleReaderDistrict) articleReaderDistrict.textContent = sectionLabel || ('DISTRICT / D' + district);
       if (articleReader) articleReader.setAttribute('aria-hidden', 'false');
       home.classList.add('has-article-reader');
       articleReader.scrollTop = 0;
