@@ -1,4 +1,3 @@
-module.exports = function (hexo) {
   const root = (hexo.config.root || '/').replace(/\/?$/, '/');
   const stylesheet = `<link rel="stylesheet" href="${root}css/site-dark.css">`;
 
@@ -6,4 +5,3 @@ module.exports = function (hexo) {
     if (!/<\/head>/i.test(html) || html.includes('css/site-dark.css')) return html;
     return html.replace(/<\/head>/i, `${stylesheet}</head>`);
   });
-};

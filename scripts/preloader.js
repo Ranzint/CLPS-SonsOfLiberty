@@ -1,4 +1,3 @@
-module.exports = function (hexo) {
   const root = (hexo.config.root || '/').replace(/\/?$/, '/');
   const fontUrl = `${root}fonts/911porschav3expand.ttf`;
 
@@ -125,4 +124,3 @@ html.site-is-loading body { overflow: hidden !important; }
     html = html.replace(/<\/head>/i, `${styles}</head>`);
     return html.replace(/(<body(?:\s[^>]*)?>)/i, `$1${loader}${runtime}`);
   });
-};
