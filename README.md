@@ -25,3 +25,7 @@ npm run server
    ```
 
 推送后，GitHub Actions 会自动安装依赖、生成 Hexo 静态文件并发布到 GitHub Pages。首次启用时，请在仓库 **Settings → Pages → Build and deployment → Source** 中选择 **GitHub Actions**。
+
+## 一键发布
+
+在项目根目录双击 `publish.bat`。脚本会暂存并提交项目中的所有更改，再推送到 `main` 分支；如果 SSH 密钥要求密码，请在打开的窗口中输入。推送完成后会打开 Actions 页面，供你查看网站部署状态。

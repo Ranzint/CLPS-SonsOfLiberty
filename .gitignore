@@ -132,6 +132,7 @@ db.json
 public/
 .deploy*/
 _multiconfig.yml
+*.lnk
 
 # pnpm
 .pnpm-store
