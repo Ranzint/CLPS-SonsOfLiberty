@@ -4,32 +4,28 @@
   "image": "cover.png",
   "sections": [
     {
-      "title": "01 / 联邦与区划",
+      "title": "01 / 基本信息",
       "subtitle": "基础记录",
       "items": [
         {
           "subtitle": "国家",
-          "content": "United States"
+          "content": "联邦"
         },
         {
-          "subtitle": "行政层级",
-          "content": "联邦州"
+          "subtitle": "行政类型",
+          "content": "区公司"
         },
         {
           "subtitle": "联邦区域",
           "content": "South"
         },
         {
-          "subtitle": "人口普查分区",
-          "content": "South Atlantic"
+          "subtitle": "区代码",
+          "content": "D1"
         },
         {
-          "subtitle": "州代码",
-          "content": "US-DE"
-        },
-        {
-          "subtitle": "邮政缩写",
-          "content": "DE"
+          "subtitle": "分级",
+          "content": "-"
         },
         {
           "subtitle": "区公司",
@@ -38,7 +34,7 @@
       ]
     },
     {
-      "title": "02 / 政府与公共机构",
+      "title": "02 / 简介",
       "subtitle": "机构与行政资料",
       "items": [
         {

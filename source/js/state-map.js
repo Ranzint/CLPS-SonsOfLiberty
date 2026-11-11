@@ -31,29 +31,11 @@
     return { code: item[0], name: item[1], order: item[2] };
   });
 
-  var divisions = {
-    'New England': 'CT ME MA NH RI VT',
-    'Middle Atlantic': 'NJ NY PA',
-    'East North Central': 'IL IN MI OH WI',
-    'West North Central': 'IA KS MN MO NE ND SD',
-    'South Atlantic': 'DE FL GA MD NC SC VA WV',
-    'East South Central': 'AL KY MS TN',
-    'West South Central': 'AR LA OK TX',
-    'Mountain': 'AZ CO ID MT NV NM UT WY',
-    'Pacific': 'AK CA HI OR WA'
-  };
-
   function regionFor(code) {
     if ('CT ME MA NH RI VT NJ NY PA'.split(' ').indexOf(code) !== -1) return 'Northeast';
     if ('IL IN MI OH WI IA KS MN MO NE ND SD'.split(' ').indexOf(code) !== -1) return 'Midwest';
     if ('DE FL GA MD NC SC VA WV AL KY MS TN AR LA OK TX'.split(' ').indexOf(code) !== -1) return 'South';
     return 'West';
-  }
-
-  function divisionFor(code) {
-    return Object.keys(divisions).find(function (division) {
-      return divisions[division].split(' ').indexOf(code) !== -1;
-    }) || '—';
   }
 
   function chineseNumber(number) {
@@ -142,12 +124,11 @@
 
     var pending = '待补充';
     return [
-      makeSection('01 / 联邦与区划', [
-        ['国家', 'United States'], ['行政层级', '联邦州'], ['联邦区域', regionFor(state.code)],
-        ['人口普查分区', divisionFor(state.code)], ['州代码', 'US-' + state.code],
-        ['邮政缩写', state.code], ['区公司', companyDetails(state), 'company']
+      makeSection('01 / 基本信息', [
+        ['国家', '联邦'], ['行政类型', '区公司'], ['联邦区域', regionFor(state.code)],
+        ['区代码', 'D' + state.order], ['分级', '-'], ['区公司', companyDetails(state), 'company']
       ]),
-      makeSection('02 / 政府与公共机构', [
+      makeSection('02 / 简介', [
         ['行政机关', pending], ['立法机构', pending], ['司法机构', pending],
         ['地方行政单位', pending], ['联邦国会席位', pending], ['公共服务入口', pending]
       ]),
