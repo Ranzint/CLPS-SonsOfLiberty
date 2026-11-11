@@ -639,9 +639,19 @@
           card.className = 'state-articles__card';
           var articleDocument = new DOMParser().parseFromString(article.html || '', 'text/html');
           var coverVideo = articleDocument.querySelector('video');
+          var coverFrame = articleDocument.querySelector('iframe[src^="https://player.bilibili.com/player.html"]');
           var coverSource = coverVideo && (coverVideo.getAttribute('src') || (coverVideo.querySelector('source') && coverVideo.querySelector('source').getAttribute('src')));
           var image;
-          if (coverSource) {
+          if (coverFrame) {
+            image = document.createElement('iframe');
+            image.className = 'state-articles__card-image';
+            image.src = coverFrame.getAttribute('src');
+            image.title = (article.title || article.filename) + '封面播放器';
+            image.loading = 'lazy';
+            image.referrerPolicy = 'strict-origin-when-cross-origin';
+            image.allow = 'autoplay; fullscreen; picture-in-picture';
+            image.allowFullscreen = true;
+          } else if (coverSource) {
             image = document.createElement('video');
             image.className = 'state-articles__card-image';
             image.src = coverSource;
@@ -689,7 +699,24 @@
     function showArticle(article, district) {
       if (!articleContent) return;
       var source = new DOMParser().parseFromString(article.html || '', 'text/html');
-      source.querySelectorAll('script, iframe, object, embed, form, base, style, link, meta').forEach(function (node) { node.remove(); });
+      source.querySelectorAll('script, object, embed, form, base, style, link, meta').forEach(function (node) { node.remove(); });
+      source.querySelectorAll('iframe').forEach(function (frame) {
+        try {
+          var frameUrl = new URL(frame.getAttribute('src') || '', window.location.href);
+          if (frameUrl.origin !== 'https://player.bilibili.com' || frameUrl.pathname !== '/player.html' || frameUrl.searchParams.get('bvid') !== 'BV1wR4t6WEvM') {
+            frame.remove();
+            return;
+          }
+          frame.setAttribute('loading', 'lazy');
+          frame.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+          frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
+          frame.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share');
+          frame.setAttribute('allowfullscreen', '');
+          frame.setAttribute('title', '纳西瑟斯号剪影 · Bilibili 视频播放器');
+        } catch (error) {
+          frame.remove();
+        }
+      });
       source.querySelectorAll('*').forEach(function (node) {
         Array.from(node.attributes).forEach(function (attribute) {
           var name = attribute.name.toLowerCase();

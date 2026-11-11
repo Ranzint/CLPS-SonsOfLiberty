@@ -652,9 +652,16 @@ body.site-home-page #mobile-nav {
 .state-articles__html .art-video-cover {
   display: block;
   width: 100%;
+  aspect-ratio: 16 / 9;
   max-height: 72vh;
   margin: 18px auto 28px;
   background: #000;
+  border: 0;
+}
+
+.state-articles__card-image:where(iframe) {
+  aspect-ratio: 16 / 9;
+  border: 0;
 }
 
 .state-articles__card-title {
