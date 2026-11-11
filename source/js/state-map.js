@@ -388,7 +388,7 @@
       var reveal = Math.max(0, Math.min(1, (1.2 - zoomLevel) / 0.2));
       moon.style.setProperty('--moon-opacity', (reveal * 0.4).toFixed(3));
       moon.style.setProperty('--moon-blur', (24 - reveal * 14).toFixed(1) + 'px');
-      moon.style.setProperty('--moon-scale', (1.12 + reveal * 0.12).toFixed(3));
+      moon.style.setProperty('--moon-scale', (1.24 - reveal * 0.12).toFixed(3));
     }
 
     var interactionStyle = mapDoc.createElementNS(iconNs, 'style');
