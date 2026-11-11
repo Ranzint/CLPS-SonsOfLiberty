@@ -294,7 +294,17 @@
     var iconUrl = mapObject.getAttribute('data-icon-url');
     var iconNs = 'http://www.w3.org/2000/svg';
     var initialView = svg.viewBox.baseVal;
-    var viewBounds = { x: initialView.x, y: initialView.y, width: initialView.width, height: initialView.height };
+    // Leave breathing room around the map at the default zoom. This lets a
+    // small zoom-in happen before the outer geography reaches the SVG frame.
+    var viewPaddingX = initialView.width * 0.15;
+    var viewPaddingY = initialView.height * 0.15;
+    var viewBounds = {
+      x: initialView.x - viewPaddingX,
+      y: initialView.y - viewPaddingY,
+      width: initialView.width + viewPaddingX * 2,
+      height: initialView.height + viewPaddingY * 2
+    };
+    svg.setAttribute('viewBox', [viewBounds.x, viewBounds.y, viewBounds.width, viewBounds.height].join(' '));
     var zoomLevel = 1;
     var maxZoom = 8;
     var dragStart = null;
