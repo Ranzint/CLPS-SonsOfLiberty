@@ -101,8 +101,8 @@
     <h2 class="state-info__title" id="state-info-title">选择一个州</h2>
     <p class="state-info__summary" id="state-info-summary">点击地图上的州或州徽图标，打开对应资料。</p>
     <div class="state-info__sections" id="state-info-sections"></div>
-    <button class="state-info__articles-toggle" id="state-articles-toggle" type="button" aria-label="打开该区文章" aria-expanded="false"><span aria-hidden="true"></span></button>
   </aside>
+  <button class="state-info__articles-toggle" id="state-articles-toggle" type="button" aria-label="打开该区文章" aria-expanded="false"><span aria-hidden="true"></span></button>
   <aside class="state-articles" id="state-articles" aria-hidden="true" aria-labelledby="state-articles-title">
     <header class="state-articles__header">
       <div><p class="state-articles__eyebrow" id="state-articles-code">DISTRICT / --</p><h2 id="state-articles-title">区文章</h2></div>

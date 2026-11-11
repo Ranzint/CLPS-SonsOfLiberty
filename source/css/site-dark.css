@@ -469,10 +469,10 @@ body.site-home-page #mobile-nav {
 
 .state-info__articles-toggle {
   position: fixed;
-  z-index: 2;
+  z-index: 31;
   top: 0;
   right: 0;
-  display: grid;
+  display: none;
   place-items: center;
   width: 26px;
   height: 100vh;
@@ -481,6 +481,10 @@ body.site-home-page #mobile-nav {
   background: #f3f3f3;
   border: 0;
   cursor: pointer;
+}
+
+.site-home.has-info .state-info__articles-toggle {
+  display: grid;
 }
 
 .state-info__articles-toggle span {
