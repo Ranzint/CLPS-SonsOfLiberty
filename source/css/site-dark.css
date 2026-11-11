@@ -339,8 +339,10 @@ body.site-home-page {
 }
 
 .site-home__credit {
-  position: relative;
+  position: fixed;
   z-index: 2;
+  right: 18px;
+  bottom: 16px;
   color: #666;
   font: 10px/1.4 Arial, sans-serif;
   letter-spacing: .025em;
@@ -631,7 +633,7 @@ body.site-home-page #mobile-nav {
   }
 
   .site-home__credit {
-    grid-column: 1;
-    align-self: start;
+    right: 10px;
+    bottom: 10px;
   }
 }
