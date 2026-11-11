@@ -1,0 +1,210 @@
+{
+  "title": "Virginia",
+  "subtitle": "第十区公司 District 10 Company · South Region",
+  "image": "cover.png",
+  "sections": [
+    {
+      "title": "01 / 联邦与区划",
+      "subtitle": "基础记录",
+      "items": [
+        {
+          "subtitle": "国家",
+          "content": "United States"
+        },
+        {
+          "subtitle": "行政层级",
+          "content": "联邦州"
+        },
+        {
+          "subtitle": "联邦区域",
+          "content": "South"
+        },
+        {
+          "subtitle": "人口普查分区",
+          "content": "South Atlantic"
+        },
+        {
+          "subtitle": "州代码",
+          "content": "US-VA"
+        },
+        {
+          "subtitle": "邮政缩写",
+          "content": "VA"
+        },
+        {
+          "subtitle": "区公司",
+          "content": "第十区公司 District 10 Company"
+        }
+      ]
+    },
+    {
+      "title": "02 / 政府与公共机构",
+      "subtitle": "机构与行政资料",
+      "items": [
+        {
+          "subtitle": "行政机关",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "立法机构",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "司法机构",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "地方行政单位",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "联邦国会席位",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "公共服务入口",
+          "content": "待补充"
+        }
+      ]
+    },
+    {
+      "title": "03 / 人口与社会",
+      "subtitle": "居民与公共生活",
+      "items": [
+        {
+          "subtitle": "人口规模",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "人口密度",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "主要城市",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "语言与社群",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "教育与研究",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "社会概况",
+          "content": "待补充"
+        }
+      ]
+    },
+    {
+      "title": "04 / 土地与地理",
+      "subtitle": "地貌与自然环境",
+      "items": [
+        {
+          "subtitle": "总面积",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "地形与水系",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "气候带",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "相邻州区",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "主要交通",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "时区",
+          "content": "待补充"
+        }
+      ]
+    },
+    {
+      "title": "05 / 产业与资源",
+      "subtitle": "经济与产业资料",
+      "items": [
+        {
+          "subtitle": "主要产业",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "特色资源",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "经济规模",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "就业结构",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "港口与物流",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "创新与科研",
+          "content": "待补充"
+        }
+      ]
+    },
+    {
+      "title": "06 / 历史与州别标识",
+      "subtitle": "历史沿革与州级象征",
+      "items": [
+        {
+          "subtitle": "加入联邦日期",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "历史沿革",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "州昵称",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "州箴言",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "州旗与州徽",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "代表性符号",
+          "content": "待补充"
+        }
+      ]
+    },
+    {
+      "title": "07 / 资料索引",
+      "subtitle": "来源与维护记录",
+      "items": [
+        {
+          "subtitle": "最近更新",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "参考来源",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "补充说明",
+          "content": "待补充"
+        }
+      ]
+    }
+  ],
+  "icon": "icon.png"
+}

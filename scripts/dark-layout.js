@@ -25,6 +25,31 @@
       : [];
     const musicPlaylist = JSON.stringify(musicTracks)
       .replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    const stateDataDirectory = path.resolve(hexo.base_dir, 'state-data', 'states');
+    const stateImageDirectory = path.resolve(hexo.base_dir, hexo.config.source_dir || 'source', 'images', 'states');
+    const stateProfiles = {};
+    if (fs.existsSync(stateDataDirectory)) {
+      for (const filename of fs.readdirSync(stateDataDirectory).filter(name => /^[A-Z]{2}\.json$/.test(name)).sort()) {
+        const code = filename.slice(0, 2);
+        try {
+          const profile = JSON.parse(fs.readFileSync(path.join(stateDataDirectory, filename), 'utf8'));
+          const resolveImageUrl = imageName => {
+            const safeName = path.basename(String(imageName || ''));
+            const imagePath = path.join(stateImageDirectory, code, safeName);
+            return safeName && fs.existsSync(imagePath)
+              ? `${root}images/states/${code}/${encodeURIComponent(safeName)}`
+              : `${root}images/state-placeholder.png`;
+          };
+          profile.imageUrl = resolveImageUrl(profile.image || 'cover.png');
+          profile.iconUrl = resolveImageUrl(profile.icon || 'icon.png');
+          stateProfiles[code] = profile;
+        } catch (error) {
+          hexo.log.warn(`Unable to read state profile ${filename}: ${error.message}`);
+        }
+      }
+    }
+    const stateProfilesJson = JSON.stringify(stateProfiles)
+      .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
     const home = `<main class="site-home" aria-labelledby="site-home-title">
   <h1 id="site-home-title" class="site-home__title">${title}</h1>
   <div class="site-home__map-area">
@@ -37,10 +62,15 @@
     </div>
   </div>
   <a class="site-home__credit" href="https://commons.wikimedia.org/wiki/File:North_America_second_level_political_division_2.svg" target="_blank" rel="noopener">Map by Alex Covarrubias · CC BY-SA 2.5 · adapted</a>
+  <script id="state-profile-data" type="application/json">${stateProfilesJson}</script>
   <audio id="site-music" preload="auto" data-playlist="${musicPlaylist}"></audio>
   <div class="site-audio" id="site-audio-player">
     <button class="site-audio__toggle" id="site-audio-toggle" type="button" aria-label="播放背景音乐">▶</button>
+    <button class="site-audio__next" id="site-audio-next" type="button" aria-label="跳过当前曲目">»</button>
     <span class="site-audio__status" id="site-audio-status" aria-live="polite">RANDOM PLAYLIST · 2 TRACKS</span>
+    <label class="site-audio__volume-label" for="site-audio-volume">VOL</label>
+    <input class="site-audio__volume" id="site-audio-volume" type="range" min="0" max="1" step="0.01" value="0.52" aria-label="背景音乐音量">
+    <output class="site-audio__volume-value" id="site-audio-volume-value" for="site-audio-volume">52%</output>
   </div>
   <aside class="state-info" id="state-info" aria-hidden="true" aria-labelledby="state-info-title">
     <div class="state-info__topline">

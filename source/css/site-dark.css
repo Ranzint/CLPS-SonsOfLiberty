@@ -361,7 +361,7 @@ body.site-home-page {
   display: flex;
   align-items: center;
   gap: 10px;
-  max-width: min(320px, 48vw);
+  max-width: min(440px, calc(100vw - 36px));
   padding: 7px 11px 7px 7px;
   color: #999;
   background: rgba(10, 10, 10, .86);
@@ -384,6 +384,26 @@ body.site-home-page {
   cursor: pointer;
 }
 
+.site-audio__next {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 26px;
+  padding: 0;
+  color: #ccc;
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 3px;
+  font: 13px/1 Arial, sans-serif;
+  cursor: pointer;
+}
+
+.site-audio__next:hover,
+.site-audio__next:focus-visible {
+  color: #fff;
+  border-color: #aaa;
+  outline: none;
+}
+
 .site-audio__toggle:hover,
 .site-audio__toggle:focus-visible {
   color: #fff;
@@ -393,9 +413,31 @@ body.site-home-page {
 }
 
 .site-audio__status {
+  flex: 0 1 160px;
+  min-width: 54px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.site-audio__volume-label,
+.site-audio__volume-value {
+  color: #777;
+  font: 8px/1 "Courier New", monospace;
+}
+
+.site-audio__volume {
+  flex: 0 0 72px;
+  width: 72px;
+  height: 14px;
+  margin: 0;
+  accent-color: #ddd;
+  cursor: pointer;
+}
+
+.site-audio__volume-value {
+  flex: 0 0 27px;
+  text-align: right;
 }
 
 body.site-home-page #mobile-nav {
@@ -503,6 +545,13 @@ body.site-home-page #mobile-nav {
   text-transform: uppercase;
 }
 
+.state-info__section-subtitle {
+  margin: 0 0 12px;
+  color: #8a8a8a;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
 .state-info__section dl {
   display: grid;
   gap: 9px;
@@ -581,8 +630,24 @@ body.site-home-page #mobile-nav {
   .site-audio {
     left: 9px;
     bottom: 9px;
-    max-width: 44vw;
+    gap: 5px;
+    max-width: calc(100vw - 18px);
+    padding: 6px 8px 6px 6px;
     font-size: 8px;
+  }
+
+  .site-audio__status {
+    flex-basis: 68px;
+    min-width: 38px;
+  }
+
+  .site-audio__volume {
+    flex-basis: 52px;
+    width: 52px;
+  }
+
+  .site-audio__volume-value {
+    flex-basis: 24px;
   }
 
   .site-home.has-info .site-home__title {

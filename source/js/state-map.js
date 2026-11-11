@@ -109,7 +109,37 @@
     return section;
   }
 
-  function buildSections(state) {
+  function buildSections(state, profile) {
+    if (profile && Array.isArray(profile.sections) && profile.sections.length) {
+      return profile.sections.map(function (item, index) {
+        var section = document.createElement('section');
+        section.className = 'state-info__section';
+        var heading = document.createElement('h3');
+        heading.textContent = item.title || ('Section ' + (index + 1));
+        section.appendChild(heading);
+        if (item.subtitle) {
+          var subtitle = document.createElement('p');
+          subtitle.className = 'state-info__section-subtitle';
+          subtitle.textContent = item.subtitle;
+          section.appendChild(subtitle);
+        }
+
+        var list = document.createElement('dl');
+        (Array.isArray(item.items) ? item.items : []).forEach(function (entry) {
+          var wrapper = document.createElement('div');
+          wrapper.className = 'state-info__row';
+          var label = document.createElement('dt');
+          label.textContent = entry.subtitle || entry.title || '';
+          var value = document.createElement('dd');
+          value.textContent = entry.content || '';
+          wrapper.append(label, value);
+          list.appendChild(wrapper);
+        });
+        if (list.childElementCount) section.appendChild(list);
+        return section;
+      });
+    }
+
     var pending = '待补充';
     return [
       makeSection('01 / 联邦与区划', [
@@ -148,8 +178,11 @@
   function initMusic() {
     var audio = document.getElementById('site-music');
     var button = document.getElementById('site-audio-toggle');
+    var nextButton = document.getElementById('site-audio-next');
     var status = document.getElementById('site-audio-status');
-    if (!audio || !button || !status) return;
+    var volumeControl = document.getElementById('site-audio-volume');
+    var volumeValue = document.getElementById('site-audio-volume-value');
+    if (!audio || !button || !nextButton || !status) return;
 
     var tracks;
     try {
@@ -159,6 +192,8 @@
     }
     if (!Array.isArray(tracks) || !tracks.length) {
       button.disabled = true;
+      nextButton.disabled = true;
+      if (volumeControl) volumeControl.disabled = true;
       setStatus('NO MP3 FILES · ADD SONGS TO SOURCE/MUSIC');
       return;
     }
@@ -166,7 +201,9 @@
     var userPaused = false;
     var fadeFrame = 0;
     var fadeOutStarted = false;
-    var targetVolume = 0.52;
+    var targetVolume = volumeControl ? Number(volumeControl.value) : 0.52;
+
+    if (volumeValue) volumeValue.textContent = Math.round(targetVolume * 100) + '%';
 
     function setStatus(message) {
       status.textContent = message;
@@ -231,12 +268,18 @@
     }
 
     function playNext() {
-      currentIndex = randomTrackIndex();
-      audio.pause();
-      audio.volume = 0;
-      audio.src = tracks[currentIndex].src;
-      audio.load();
-      tryPlay();
+      var nextIndex = randomTrackIndex();
+      function loadNextTrack() {
+        audio.pause();
+        currentIndex = nextIndex;
+        audio.src = tracks[currentIndex].src;
+        audio.load();
+        audio.volume = 0;
+        userPaused = false;
+        tryPlay();
+      }
+      if (!audio.paused) fadeTo(0, 500, loadNextTrack);
+      else loadNextTrack();
     }
 
     button.addEventListener('click', function () {
@@ -252,6 +295,17 @@
       }
     });
 
+    nextButton.addEventListener('click', playNext);
+    if (volumeControl) {
+      volumeControl.addEventListener('input', function () {
+        targetVolume = Math.max(0, Math.min(1, Number(volumeControl.value)));
+        if (volumeValue) volumeValue.textContent = Math.round(targetVolume * 100) + '%';
+        cancelAnimationFrame(fadeFrame);
+        fadeFrame = 0;
+        audio.volume = targetVolume;
+      });
+    }
+
     audio.addEventListener('timeupdate', function () {
       var remaining = audio.duration - audio.currentTime;
       if (!userPaused && !fadeOutStarted && Number.isFinite(remaining) && remaining <= 2.4 && remaining > 0) {
@@ -266,11 +320,11 @@
     });
 
     document.addEventListener('pointerdown', function (event) {
-      if (event.target.closest && event.target.closest('#site-audio-toggle')) return;
+      if (event.target.closest && event.target.closest('#site-audio-player')) return;
       tryPlay();
     });
     document.addEventListener('keydown', function (event) {
-      if (event.target.closest && event.target.closest('#site-audio-toggle')) return;
+      if (event.target.closest && event.target.closest('#site-audio-player')) return;
       tryPlay();
     });
     window.__siteMusicStart = tryPlay;
@@ -283,7 +337,16 @@
     var home = document.querySelector('.site-home');
     var panel = document.getElementById('state-info');
     var closeButton = panel && panel.querySelector('.state-info__close');
+    var infoImage = panel && panel.querySelector('.state-info__image');
     if (!mapObject || !home || !panel || !closeButton) return;
+
+    var stateProfiles = {};
+    var profileData = document.getElementById('state-profile-data');
+    try {
+      stateProfiles = JSON.parse(profileData && profileData.textContent || '{}');
+    } catch (error) {
+      stateProfiles = {};
+    }
 
     var mapDoc = mapObject.contentDocument;
     var svg = mapDoc && mapDoc.documentElement;
@@ -512,11 +575,17 @@
       home.classList.add('has-info');
       panel.setAttribute('aria-hidden', 'false');
       document.getElementById('state-info-code').textContent = 'STATE / US-' + state.data.code;
-      document.getElementById('state-info-title').textContent = state.data.name;
-      document.getElementById('state-info-summary').textContent = companyName(state.data) + '　·　' + regionFor(state.data.code) + ' Region';
+      var profile = stateProfiles[state.data.code] || {};
+      var title = profile.title || state.data.name;
+      document.getElementById('state-info-title').textContent = title;
+      document.getElementById('state-info-summary').textContent = profile.subtitle || (companyName(state.data) + '　·　' + regionFor(state.data.code) + ' Region');
+      if (infoImage) {
+        infoImage.src = profile.imageUrl || mapObject.getAttribute('data-icon-url');
+        infoImage.alt = title + '资料图片';
+      }
 
       var sections = document.getElementById('state-info-sections');
-      sections.replaceChildren.apply(sections, buildSections(state.data));
+      sections.replaceChildren.apply(sections, buildSections(state.data, profile));
       closeButton.focus({ preventScroll: true });
     }
 
@@ -561,7 +630,7 @@
       image.setAttribute('y', center.y - size / 2);
       image.setAttribute('width', size);
       image.setAttribute('height', size);
-      image.setAttribute('href', iconUrl);
+      image.setAttribute('href', (stateProfiles[data.code] || {}).iconUrl || iconUrl);
       image.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       image.setAttribute('pointer-events', 'none');
       marker.appendChild(image);
