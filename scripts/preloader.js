@@ -43,16 +43,16 @@ html.site-is-loading body { overflow: hidden !important; }
 #site-preloader .progress-percent {
   position: absolute;
   left: 0;
-  bottom: calc(100% + 12px);
+  bottom: calc(100% + 6px);
   color: #fff;
-  font: 400 21px/1 "PorscheProgress", sans-serif;
+  font: 400 16px/1 "PorscheProgress", sans-serif;
   white-space: nowrap;
   user-select: none;
-  transform: translateX(-50%);
+  transform: translateX(-100%);
 }
 @media (max-width: 480px) {
   #site-preloader .progress-track { width: 78vw; }
-  #site-preloader .progress-percent { font-size: 18px; }
+  #site-preloader .progress-percent { font-size: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
   #site-preloader, #site-preloader .progress-fill { transition: none; }
