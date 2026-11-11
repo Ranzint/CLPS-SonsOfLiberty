@@ -306,13 +306,12 @@
 
     var interactionStyle = mapDoc.createElementNS(iconNs, 'style');
     interactionStyle.textContent = [
-      '#USA [id^="US-"] { cursor: pointer; }',
+      '#USA [id^="US-"] { cursor: pointer; pointer-events: all; }',
       '#USA [id^="US-"]:focus { outline: none; }',
       '#USA [id^="US-"].is-selected path { animation: state-flash 1.15s ease-in-out infinite; }',
       '@keyframes state-flash { 0%,100% { fill: #fff; fill-opacity: .25; } 50% { fill: #fff; fill-opacity: .82; } }',
       '@media (prefers-reduced-motion: reduce) { #USA [id^="US-"].is-selected path { animation: none; fill: #fff !important; fill-opacity: .55; } }',
-      '#state-markers { pointer-events: all; }',
-      '.state-marker-hit { pointer-events: all; cursor: default; }',
+      '#state-markers { pointer-events: none; }',
       '.state-map-panning { cursor: grabbing !important; }',
       'svg { touch-action: none; user-select: none; }'
     ].join('\n');
@@ -466,7 +465,7 @@
     var markers = mapDoc.createElementNS(iconNs, 'g');
     markers.setAttribute('id', 'state-markers');
     markers.setAttribute('aria-hidden', 'true');
-    markers.setAttribute('pointer-events', 'all');
+    markers.setAttribute('pointer-events', 'none');
     svg.appendChild(markers);
 
     function setState(state) {
@@ -495,6 +494,7 @@
       panel.setAttribute('aria-hidden', 'true');
     }
 
+    var stateEntries = Object.create(null);
     states.forEach(function (data) {
       var node = svg.querySelector('#US-' + data.code);
       if (!node) return;
@@ -521,13 +521,6 @@
       marker.setAttribute('class', 'state-marker');
       marker.setAttribute('data-state', data.code);
 
-      var hitArea = mapDoc.createElementNS(iconNs, 'circle');
-      hitArea.setAttribute('class', 'state-marker-hit');
-      hitArea.setAttribute('cx', center.x);
-      hitArea.setAttribute('cy', center.y);
-      hitArea.setAttribute('r', size * 0.72);
-      hitArea.setAttribute('fill', 'transparent');
-      hitArea.setAttribute('pointer-events', 'all');
       var image = mapDoc.createElementNS(iconNs, 'image');
       image.setAttribute('x', center.x - size / 2);
       image.setAttribute('y', center.y - size / 2);
@@ -536,17 +529,31 @@
       image.setAttribute('href', iconUrl);
       image.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       image.setAttribute('pointer-events', 'none');
-      marker.append(hitArea, image);
+      marker.appendChild(image);
       markers.appendChild(marker);
 
       var entry = { data: data, node: node };
-      node.addEventListener('click', function () { setState(entry); });
+      stateEntries[data.code] = entry;
       node.addEventListener('keydown', function (event) {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
           setState(entry);
         }
       });
+    });
+
+    // Delegate selection from the SVG so nested paths and state groups are
+    // handled consistently, including when the map is zoomed or panned.
+    svg.addEventListener('click', function (event) {
+      var target = event.target;
+      while (target && target !== svg) {
+        var match = /^US-([A-Z]{2})$/.exec(target.id || '');
+        if (match && stateEntries[match[1]]) {
+          setState(stateEntries[match[1]]);
+          return;
+        }
+        target = target.parentNode;
+      }
     });
 
     closeButton.addEventListener('click', closePanel);

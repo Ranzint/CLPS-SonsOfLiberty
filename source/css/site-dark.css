@@ -267,8 +267,9 @@ body.site-home-page {
   position: relative;
   display: grid;
   place-items: center;
-  width: min(56vw, 66vh, 780px);
-  height: 100%;
+  width: min(56vw, 56.7vh, 780px);
+  aspect-ratio: 1711.7 / 1992.1;
+  height: auto;
   min-height: 0;
   transition: transform 520ms cubic-bezier(.2,.75,.25,1);
 }
@@ -332,6 +333,7 @@ body.site-home-page {
   display: block;
   width: 100%;
   height: 100%;
+  min-width: 0;
   min-height: 0;
   border: 0;
   overflow: visible;
@@ -563,7 +565,7 @@ body.site-home-page #mobile-nav {
   }
 
   .site-home__map-area {
-    width: min(88vw, 65vh);
+    width: min(88vw, 55.8vh);
   }
 
   .map-zoom {
@@ -630,8 +632,7 @@ body.site-home-page #mobile-nav {
   .site-home__map-area {
     grid-column: 2;
     grid-row: 1 / 3;
-    width: min(56vw, 66vh, 780px);
-    height: 100%;
+    width: min(56vw, 56.7vh, 780px);
   }
 
   .site-home.has-info .site-home__map-area {
