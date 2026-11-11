@@ -62,10 +62,11 @@
     const stateImageDirectory = path.resolve(hexo.base_dir, hexo.config.source_dir || 'source', 'images', 'states');
     const stateProfiles = {};
     if (fs.existsSync(stateDataDirectory)) {
-      for (const filename of fs.readdirSync(stateDataDirectory).filter(name => /^[A-Z]{2}\.json$/.test(name)).sort()) {
-        const code = filename.slice(0, 2);
+      for (const filename of fs.readdirSync(stateDataDirectory).filter(name => /^\d+\.json$/.test(name)).sort((a, b) => Number.parseInt(a, 10) - Number.parseInt(b, 10))) {
         try {
           const profile = JSON.parse(fs.readFileSync(path.join(stateDataDirectory, filename), 'utf8'));
+          const code = profile.code;
+          if (!/^[A-Z]{2}$/.test(code || '')) throw new Error('Missing state code in district profile');
           const resolveImageUrl = imageName => {
             const safeName = path.basename(String(imageName || ''));
             const imagePath = path.join(stateImageDirectory, code, safeName);

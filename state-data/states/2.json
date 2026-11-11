@@ -1,0 +1,92 @@
+{
+  "title": "Pennsylvania",
+  "subtitle": "第二区公司 District 2 Company · Northeast Region",
+  "image": "cover.png",
+  "sections": [
+    {
+      "title": "01 / 基本信息",
+      "subtitle": "基础记录",
+      "items": [
+        {
+          "subtitle": "国家",
+          "content": "联邦"
+        },
+        {
+          "subtitle": "行政类型",
+          "content": "区公司"
+        },
+        {
+          "subtitle": "联邦区域",
+          "content": "Northeast"
+        },
+        {
+          "subtitle": "区代码",
+          "content": "D2"
+        },
+        {
+          "subtitle": "分级",
+          "content": "-"
+        },
+        {
+          "subtitle": "区公司",
+          "content": "第二区公司 District 2 Company"
+        }
+      ]
+    },
+    {
+      "title": "02 / 简介",
+      "subtitle": "空置文本",
+      "items": []
+    },
+    {
+      "title": "06 / 历史记录",
+      "subtitle": "历史沿革与州级象征",
+      "items": [
+        {
+          "subtitle": "加入联邦日期",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "历史沿革",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "州昵称",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "州箴言",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "州旗与州徽",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "代表性符号",
+          "content": "待补充"
+        }
+      ]
+    },
+    {
+      "title": "07 / 资料索引",
+      "subtitle": "来源与维护记录",
+      "items": [
+        {
+          "subtitle": "最近更新",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "参考来源",
+          "content": "待补充"
+        },
+        {
+          "subtitle": "补充说明",
+          "content": "待补充"
+        }
+      ]
+    }
+  ],
+  "icon": "icon.png",
+  "code": "PA"
+}
