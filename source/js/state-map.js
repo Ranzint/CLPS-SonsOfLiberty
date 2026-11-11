@@ -319,6 +319,11 @@
     var panel = document.getElementById('state-info');
     var closeButton = panel && panel.querySelector('.state-info__close');
     var infoImage = panel && panel.querySelector('.state-info__image');
+    var articlePanel = document.getElementById('state-articles');
+    var articleToggle = document.getElementById('state-articles-toggle');
+    var articleClose = document.getElementById('state-articles-close');
+    var articleList = document.getElementById('state-articles-list');
+    var articleContent = document.getElementById('state-articles-content');
     if (!mapObject || !home || !panel || !closeButton) return;
 
     var stateProfiles = {};
@@ -327,6 +332,13 @@
       stateProfiles = JSON.parse(profileData && profileData.textContent || '{}');
     } catch (error) {
       stateProfiles = {};
+    }
+    var districtArticles = {};
+    try {
+      var articleData = document.getElementById('district-article-data');
+      districtArticles = JSON.parse(articleData && articleData.textContent || '{}');
+    } catch (error) {
+      districtArticles = {};
     }
 
     var mapDoc = mapObject.contentDocument;
@@ -558,6 +570,7 @@
       document.getElementById('state-info-code').textContent = 'STATE / US-' + state.data.code;
       var profile = stateProfiles[state.data.code] || {};
       var title = profile.title || state.data.name;
+      var districtName = 'District ' + state.data.order + ' Company';
       document.getElementById('state-info-title').textContent = title;
       document.getElementById('state-info-summary').textContent = profile.subtitle || (companyName(state.data) + '　·　' + regionFor(state.data.code) + ' Region');
       if (infoImage) {
@@ -567,7 +580,58 @@
 
       var sections = document.getElementById('state-info-sections');
       sections.replaceChildren.apply(sections, buildSections(state.data, profile));
+      if (articlePanel && articleList && articleContent) {
+        document.getElementById('state-articles-code').textContent = 'DISTRICT / D' + state.data.order;
+        document.getElementById('state-articles-title').textContent = title + ' · ' + districtName;
+        articleList.replaceChildren();
+        articleContent.replaceChildren();
+        var articles = districtArticles[String(state.data.order)] || [];
+        if (!articles.length) {
+          var empty = document.createElement('p');
+          empty.className = 'state-articles__empty';
+          empty.textContent = '该区暂时没有文章。';
+          articleList.appendChild(empty);
+        } else {
+          articles.forEach(function (article, index) {
+            var item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'state-articles__item';
+            item.textContent = article.title || article.filename;
+            item.addEventListener('click', function () { showArticle(article, item); });
+            articleList.appendChild(item);
+            if (index === 0) showArticle(article, item);
+          });
+        }
+      }
       closeButton.focus({ preventScroll: true });
+    }
+
+    function showArticle(article, selectedButton) {
+      if (!articleContent) return;
+      articleList.querySelectorAll('.is-current').forEach(function (node) { node.classList.remove('is-current'); });
+      if (selectedButton) selectedButton.classList.add('is-current');
+      var source = new DOMParser().parseFromString(article.html || '', 'text/html');
+      source.querySelectorAll('script, iframe, object, embed, form, base, style, link, meta').forEach(function (node) { node.remove(); });
+      source.querySelectorAll('*').forEach(function (node) {
+        Array.from(node.attributes).forEach(function (attribute) {
+          var name = attribute.name.toLowerCase();
+          var value = attribute.value.trim().toLowerCase();
+          if (name.slice(0, 2) === 'on' || name === 'style' || name === 'srcdoc' ||
+              ((name === 'href' || name === 'src' || name === 'xlink:href') && value.indexOf('javascript:') === 0)) {
+            node.removeAttribute(attribute.name);
+          }
+        });
+      });
+      var wrapper = document.createElement('div');
+      wrapper.className = 'state-articles__html';
+      wrapper.innerHTML = source.body.innerHTML;
+      articleContent.replaceChildren(wrapper);
+    }
+
+    function closeArticles() {
+      home.classList.remove('has-articles');
+      if (articlePanel) articlePanel.setAttribute('aria-hidden', 'true');
+      if (articleToggle) articleToggle.setAttribute('aria-expanded', 'false');
     }
 
     function closePanel() {
@@ -577,6 +641,7 @@
       selected = null;
       home.classList.remove('has-info');
       panel.setAttribute('aria-hidden', 'true');
+      closeArticles();
     }
 
     var stateEntries = Object.create(null);
@@ -642,8 +707,18 @@
     });
 
     closeButton.addEventListener('click', closePanel);
+    if (articleToggle && articlePanel) {
+      articleToggle.addEventListener('click', function () {
+        var open = !home.classList.contains('has-articles');
+        home.classList.toggle('has-articles', open);
+        articlePanel.setAttribute('aria-hidden', open ? 'false' : 'true');
+        articleToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    }
+    if (articleClose) articleClose.addEventListener('click', closeArticles);
     document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && panel.getAttribute('aria-hidden') === 'false') closePanel();
+      if (event.key === 'Escape' && home.classList.contains('has-articles')) closeArticles();
+      else if (event.key === 'Escape' && panel.getAttribute('aria-hidden') === 'false') closePanel();
     });
   }
 

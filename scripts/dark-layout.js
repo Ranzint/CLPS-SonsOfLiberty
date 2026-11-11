@@ -50,6 +50,24 @@
     }
     const stateProfilesJson = JSON.stringify(stateProfiles)
       .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
+    const articlesDirectory = path.resolve(hexo.base_dir, 'articles');
+    const districtArticles = {};
+    for (let number = 1; number <= 50; number++) {
+      const directory = path.join(articlesDirectory, String(number));
+      const files = fs.existsSync(directory)
+        ? fs.readdirSync(directory).filter(filename => /\.html?$/i.test(filename)).sort((a, b) => a.localeCompare(b))
+        : [];
+      districtArticles[number] = files.map(filename => {
+        const html = fs.readFileSync(path.join(directory, filename), 'utf8');
+        const titleMatch = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html);
+        const title = titleMatch
+          ? titleMatch[1].replace(/<[^>]+>/g, '').trim()
+          : path.basename(filename, path.extname(filename));
+        return { title, filename, html };
+      });
+    }
+    const districtArticlesJson = JSON.stringify(districtArticles)
+      .replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
     const home = `<main class="site-home" aria-labelledby="site-home-title">
   <h1 id="site-home-title" class="site-home__title">${title}</h1>
   <div class="site-home__map-area">
@@ -63,6 +81,7 @@
   </div>
   <a class="site-home__credit" href="https://commons.wikimedia.org/wiki/File:North_America_second_level_political_division_2.svg" target="_blank" rel="noopener">Map by Alex Covarrubias · CC BY-SA 2.5 · adapted</a>
   <script id="state-profile-data" type="application/json">${stateProfilesJson}</script>
+  <script id="district-article-data" type="application/json">${districtArticlesJson}</script>
   <audio id="site-music" preload="auto" data-playlist="${musicPlaylist}"></audio>
   <div class="site-audio" id="site-audio-player">
     <button class="site-audio__toggle" id="site-audio-toggle" type="button" aria-label="播放背景音乐">▶</button>
@@ -82,6 +101,17 @@
     <h2 class="state-info__title" id="state-info-title">选择一个州</h2>
     <p class="state-info__summary" id="state-info-summary">点击地图上的州或州徽图标，打开对应资料。</p>
     <div class="state-info__sections" id="state-info-sections"></div>
+    <button class="state-info__articles-toggle" id="state-articles-toggle" type="button" aria-label="打开该区文章" aria-expanded="false"><span aria-hidden="true"></span></button>
+  </aside>
+  <aside class="state-articles" id="state-articles" aria-hidden="true" aria-labelledby="state-articles-title">
+    <header class="state-articles__header">
+      <div><p class="state-articles__eyebrow" id="state-articles-code">DISTRICT / --</p><h2 id="state-articles-title">区文章</h2></div>
+      <button class="state-articles__close" id="state-articles-close" type="button" aria-label="关闭文章栏">×</button>
+    </header>
+    <div class="state-articles__body">
+      <nav class="state-articles__list" id="state-articles-list" aria-label="文章列表"></nav>
+      <article class="state-articles__content" id="state-articles-content"><p class="state-articles__empty">选择一篇文章阅读。</p></article>
+    </div>
   </aside>
 </main>`;
 
