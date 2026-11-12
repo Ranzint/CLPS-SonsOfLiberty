@@ -152,7 +152,7 @@
     <circle id="district-map-link-point" r="4"></circle>
   </svg>
   <div class="site-home__map-area">
-    <object class="site-home__map" id="state-map" type="image/svg+xml" data="${root}images/north-america-map.svg" data-icon-url="${root}images/state-placeholder.png" data-background-url="${root}images/carbon-fiber-background.png" aria-label="北美洲地图。选择任一美国州查看资料。"></object>
+    <object class="site-home__map" id="state-map" type="image/svg+xml" data="${root}images/north-america-map.svg" data-icon-url="${root}images/state-placeholder.png" aria-label="北美洲地图。选择任一美国州查看资料。"></object>
     <div class="map-zoom" role="group" aria-label="地图缩放">
       <button type="button" data-map-zoom="in" aria-label="放大地图">+</button>
       <output id="map-zoom-value" aria-live="polite">1×</output>
