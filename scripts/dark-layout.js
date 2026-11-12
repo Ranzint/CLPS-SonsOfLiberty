@@ -147,6 +147,11 @@
       <nav class="site-home__repository-list" id="home-repository-list" aria-label="已有素材文件"></nav>
     </section>
   </aside>
+  <div class="hanging-badge" id="hanging-badge" aria-label="可拖动的悬挂工牌">
+    <canvas class="hanging-badge__canvas" id="hanging-badge-canvas" aria-hidden="true"></canvas>
+    <button class="hanging-badge__hit-area" id="hanging-badge-hit-area" type="button" aria-label="拖动悬挂工牌"></button>
+    <span class="hanging-badge__caption">FIELD PASS · DISTRICT 33</span>
+  </div>
   <svg class="site-home__district-link" id="district-map-link" aria-hidden="true" focusable="false">
     <path id="district-map-link-path"></path>
     <circle id="district-map-link-point" r="4"></circle>
@@ -211,5 +216,5 @@
     html = html.replace(/<body(.*?)>/i, '<body$1 class="site-home-page">');
     html = html.replace(/<script[^>]+src="[^"]*\/js\/script\.js"[^>]*><\/script>/i, '');
     html = html.replace(/<header id="header">[\s\S]*?<\/header>[\s\S]*?<footer id="footer">[\s\S]*?<\/footer>/i, home);
-    return html.replace(/<\/body>/i, `<script src="${root}js/state-map.js" defer></script></body>`);
+    return html.replace(/<\/body>/i, `<script src="${root}js/state-map.js" defer></script><script type="module" src="${root}js/hanging-badge.js"></script></body>`);
   });

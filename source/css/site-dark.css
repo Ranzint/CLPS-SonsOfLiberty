@@ -382,6 +382,53 @@ body.site-home-page {
   filter: drop-shadow(0 0 5px rgba(205, 222, 255, .9));
 }
 
+.hanging-badge {
+  position: fixed;
+  z-index: 18;
+  top: 14px;
+  right: 18px;
+  width: 248px;
+  height: 334px;
+  pointer-events: none;
+}
+
+.hanging-badge__canvas {
+  display: block;
+  width: 100%;
+  height: calc(100% - 17px);
+  overflow: visible;
+  pointer-events: none;
+  touch-action: none;
+  cursor: grab;
+}
+
+.hanging-badge__hit-area {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.hanging-badge__hit-area:active {
+  cursor: grabbing;
+}
+
+.hanging-badge__caption {
+  display: block;
+  color: rgba(210, 215, 225, .5);
+  font: 8px/17px "Courier New", monospace;
+  letter-spacing: .14em;
+  text-align: center;
+}
+
 .site-home__sidepanel {
   display: flex;
   flex-direction: column;
@@ -1675,6 +1722,18 @@ body.site-home-page #mobile-nav {
 
   .site-home__sidepanel-heading h2 {
     font-size: 9px;
+  }
+
+  .hanging-badge {
+    top: 55px;
+    right: 6px;
+    width: 152px;
+    height: 228px;
+  }
+
+  .hanging-badge__caption {
+    font-size: 6px;
+    letter-spacing: .08em;
   }
 
   .site-home__sidepanel-toggle {
